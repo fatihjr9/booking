@@ -82,7 +82,7 @@
                                     {{ $item->payment }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->payment }}
+                                    {{ Number::currency($item->amount, 'IDR') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $item->affiliate }}

@@ -43,15 +43,20 @@ class CustomerController extends Controller
             'person'=> 'required', 
             'book_date'=> 'required',
             'book_time'=> 'required', 
-            'menu'=> 'required', 
-            'amount'=> 'required', 
+            'menu'=> 'required|array', 
+            'amount'=> 'required|string', 
             'payment'=> 'required'
         ]);
+        $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
         // Decreasing seats total
         $seats = seat::whereDate('book_date', $data['book_date'])
                   ->where('available_time', $data['book_time'])
                   ->firstOrFail();
+        if ($seats->seat_left < $data['person']) {
+            // If seats are fully booked, return back with an error message
+            return redirect()->back()->with('error', 'Seat full booked');
+        }
         $seats->seat_left -= $data['person'];
         $seats->save();
 
