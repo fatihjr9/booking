@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('affiliates', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('store_name');
+            $table->string('manager');
+            $table->string('email');
+            $table->string('whatsapp');
+            $table->string('bank_name');
+            $table->string('account_numb');
+            $table->string('account_holder');
             $table->string('url');
-            $table->string('clicked_url');
+            $table->string('clicked_count')->nullable();
             $table->timestamps();
         });
     }

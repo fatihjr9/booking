@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\affiliate;
 use App\Models\customer;
 use App\Models\menu;
 use App\Models\seat;
@@ -15,6 +16,8 @@ class CustomerController extends Controller
     }
 
     public function create(Request $request) {
+        // Dapatkan URL affiliate dari parameter request
+        $affiliateUrl = $request->session()->get('affiliate_url');
         // Filter Seat by date
         $dates = $request->input('book_date');
         $seats = seat::whereDate('book_date', $dates)->get();
@@ -30,7 +33,7 @@ class CustomerController extends Controller
         $selectedDate = $request->session()->get('selected_date');
         $selectedTime = $request->session()->get('selected_time');
     
-        return view('client.index', compact('seats','dates','menu', 'setDate', 'setTime', 'selectedTime'));
+        return view('client.index', compact('seats','dates','menu', 'setDate', 'setTime', 'selectedTime', 'affiliateUrl'));
     }
     
     
@@ -49,6 +52,18 @@ class CustomerController extends Controller
         ]);
         $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
+
+        if (!empty($affiliateCode)) {
+            $affiliate = Affiliate::where('url', $affiliateCode)->first();
+            if ($affiliate) {
+                // Jika affiliate ditemukan, tambahkan clicked count
+                $affiliate->increment('clicked_count');
+            } else {
+                // Jika affiliate tidak ditemukan, tampilkan pesan error
+                return redirect()->back()->with('error', 'Affiliate not found');
+            }
+        }
+
         // Decreasing seats total
         $seats = seat::whereDate('book_date', $data['book_date'])
                   ->where('available_time', $data['book_time'])

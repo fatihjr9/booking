@@ -103,7 +103,7 @@
                 </div>
                 <div class="flex flex-col space-y-0.5">
                     <p class="text-sm font-medium">Total</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" readonly name="amount" id="" value="{{ Number::currency($item->price, 'IDR') }}">
+                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" readonly name="amount" id="">
                 </div>
             </div>
             <button type="submit" class="w-full py-2 rounded-lg text-white bg-black text-sm">Book Now</button>

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SeatController;
+use App\Models\affiliate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [CustomerController::class,'create'])->name('client-create');
+Route::get('/', [CustomerController::class,'create'],)->name('client-create');
 Route::post('/', [CustomerController::class,'store'])->name('client-store');
 
 
@@ -41,9 +43,9 @@ Route::middleware([
     Route::get('/admin/seat/add', [SeatController::class, 'create'])->name('admin-seat-create');
     Route::post('/admin/seat/add', [SeatController::class, 'store'])->name('admin-seat-store');
     // Affiliate
-    Route::get('/admin/affiliate', function () {
-        return view('admin.views.affiliate');
-    })->name('admin-affiliate');
+    Route::get('/admin/affiliate', [AffiliateController::class, 'index'])->name('admin-affiliate');
+    Route::get('/admin/affiliate/add', [AffiliateController::class, 'create'])->name('admin-affiliate-create');
+    Route::post('/admin/affiliate/add', [AffiliateController::class, 'store'])->name('admin-affiliate-store');
     // customer
     Route::get('/admin/customer', [CustomerController::class, 'index'])->name('admin-customer');
     Route::delete('/admin/customer/{id}', [CustomerController::class, 'destroy'])->name('admin-customer-destroy');

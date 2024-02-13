@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class affiliate extends Model
 {
     use HasFactory;
+    protected $fillable = ['store_name','manager','email','whatsapp','bank_name','account_numb','account_holder','url'];
 }
