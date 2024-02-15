@@ -3,19 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classes;
-use App\Models\menu;
 use Illuminate\Http\Request;
 
-class MenuController extends Controller
+class ClassesController extends Controller
 {
-    public function index() {
-        $classes = Classes::latest()->get();
-        $menus = menu::latest()->get();
-        return view('admin.views.menu', compact('menus','classes'));
-    }
-
     public function create() {
-        return view('admin.action.menu.create');
+        return view('admin.action.class.create');
     }
 
     public function store(Request $request) {
@@ -24,13 +17,13 @@ class MenuController extends Controller
             'description' => 'required',
             'price' => 'required'
         ]);
-        menu::create($data);
+        Classes::create($data);
         return redirect()->route('admin-menu');
     }
 
     public function edit($id) {
-        $menu = menu::findOrFail($id);
-        return view('admin.action.menu.edit', compact('menu'));
+        $class = Classes::findOrFail($id);
+        return view('admin.action.class.edit', compact('class'));
     }
     
 
@@ -41,16 +34,16 @@ class MenuController extends Controller
             'price' => 'required'
         ]);
     
-        $menu = menu::findOrFail($id);
-        $menu->update($data);
+        $class = Classes::findOrFail($id);
+        $class->update($data);
     
         return redirect()->route('admin-menu');
     }    
 
     public function destroy($id) {
-        $menu = menu::findOrFail($id);
-        $menu->delete();
+        $classes = Classes::findOrFail($id);
+        $classes->delete();
         
         return redirect()->back()->with('success', 'Data customer berhasil dihapus');
-    }
+    } 
 }

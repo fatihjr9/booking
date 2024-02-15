@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use App\Models\affiliate;
+use App\Models\customer;
 use Illuminate\Http\Request;
 
 class AffiliateController extends Controller
@@ -33,4 +34,11 @@ class AffiliateController extends Controller
         affiliate::create($data);
         return redirect()->route('admin-affiliate');
     }
+
+    public function destroy($id) {
+        $customer = affiliate::findOrFail($id);
+        $customer->delete();
+        
+        return redirect()->back()->with('success', 'Data customer berhasil dihapus');
+    }    
 }

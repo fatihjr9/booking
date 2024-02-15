@@ -7,13 +7,15 @@ use Illuminate\Http\Request;
 
 class SeatController extends Controller
 {
-    public function index() {
-        $data = seat::orderBy('book_date')->get();
-        $grouped = $data->groupBy(function ($item) {
-            return \Carbon\Carbon::parse($item->date)->format('l, d M Y');
-        });
 
-        return view('admin.views.seat', compact('data', 'grouped'));
+    public function index() {
+        $seats = seat::orderBy('book_date')->orderBy('available_time')->get();
+
+        $grouped = $seats->groupBy(function ($item) {
+            return \Carbon\Carbon::parse($item->book_date)->format('l, d M Y');
+        });
+    
+        return view('admin.views.seat', compact('grouped'));
     }
 
     public function create() {
