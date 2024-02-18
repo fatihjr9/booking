@@ -5,13 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\affiliate;
 use App\Models\customer;
 use App\Models\menu;
+use Illuminate\Support\Str;
 use App\Models\seat;
 use Illuminate\Http\Request;
+use Midtrans\Transaction;
 
 class CustomerController extends Controller
 {
+    public function __construct()
+    {
+        \Midtrans\Config::$serverKey    = config('services.midtrans.serverKey');
+        \Midtrans\Config::$isProduction = config('services.midtrans.isProduction');
+        \Midtrans\Config::$isSanitized  = config('services.midtrans.isSanitized');
+        \Midtrans\Config::$is3ds        = config('services.midtrans.is3ds');
+    }
+
     public function index() {
         $data = customer::latest()->get();
+        // dd($data);
         return view('admin.views.customer', compact('data'));
     }
 
@@ -38,6 +49,15 @@ class CustomerController extends Controller
     
     
     public function store(Request $request) {
+        // Set Random Code
+        $length = 6;
+        $random = '';
+        for ($i = 0; $i < $length; $i++) {
+            $random .= rand(0, 1) ? rand(0, 9) : chr(rand(ord('a'), ord('z')));
+        }
+
+        $no_invoice = 'TRX-'.Str::upper($random);
+        // Send to DB
         $data = $request->validate([
             'name' => 'required',
             'email' => 'required',
@@ -50,37 +70,46 @@ class CustomerController extends Controller
             'amount'=> 'required|string', 
             'payment'=> 'required'
         ]);
-        $data['menu'] = implode(',', $data['menu']);
-        $data['affiliate'] = $request->input('affiliate');
-
-        if (!empty($affiliateCode)) {
-            $affiliate = Affiliate::where('url', $affiliateCode)->first();
-            if ($affiliate) {
-                // Jika affiliate ditemukan, tambahkan clicked count
-                $affiliate->increment('clicked_count');
-            } else {
-                // Jika affiliate tidak ditemukan, tampilkan pesan error
-                return redirect()->back()->with('error', 'Affiliate not found');
+            // Other Logic Start
+            $data['menu'] = implode(',', $data['menu']);
+            $data['affiliate'] = $request->input('affiliate');
+            // Affiliate Code Setting
+            $codeAffiliate = $request->input('affiliate');
+            if (!empty($codeAffiliate)) {
+                $affiliate = Affiliate::where('url', $codeAffiliate)->first();
+                if ($affiliate) {
+                    $affiliate->increment('clicked_count');
+                } else {
+                    return redirect()->back()->with('error', 'Affiliate not found');
+                }
             }
-        }
+            
+            // Availability Seats
+            $seats = Seat::whereDate('book_date', $data['book_date'])
+              ->where('available_time', $data['book_time'])
+              ->firstOrFail();
+            if ($seats->seat_left < $data['person']) {
+                return redirect()->back()->with('error', 'Seat fully booked');
+            }
+            $seats->seat_left -= $data['person'];
+            $seats->save();
 
-        // Decreasing seats total
-        $seats = seat::whereDate('book_date', $data['book_date'])
-                  ->where('available_time', $data['book_time'])
-                  ->firstOrFail();
-        if ($seats->seat_left < $data['person']) {
-            // If seats are fully booked, return back with an error message
-            return redirect()->back()->with('error', 'Seat full booked');
-        }
-        $seats->seat_left -= $data['person'];
-        $seats->save();
+            // Clear session data
+            $request->session()->forget('selected_date');
+            $request->session()->forget('selected_time');
 
-        // Bersihkan session setelah selesai
-        $request->session()->forget('selected_date');
-        $request->session()->forget('selected_time');
-
-        customer::create($data);
-        return redirect()->route('client-create');
+            // End
+            $customer = customer::create($data);
+            $trx_id = $customer->trx_id;
+        // Midtrans Integration
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $no_invoice,
+                'gross_amount' => $request->amount,
+            ],
+        ];
+        $snapToken = \Midtrans\Snap::getSnapToken($payload);
+        return view('client.order', compact('snapToken','no_invoice', 'data'));
     }
 
     public function destroy($id) {

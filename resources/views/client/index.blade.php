@@ -95,7 +95,11 @@
                 </div>
                 <div class="flex flex-col space-y-0.5">
                     <p class="text-sm font-medium">Payment Method</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" name="payment" id="">
+                    <select name="payment" id="" class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg">
+                        <option value="Local Bank">Local Bank</option>
+                        {{-- <option value="Paypal">Paypal</option> --}}
+                        <option value="Cash">Cash</option>
+                    </select>
                 </div>
                 <div class="flex flex-col space-y-0.5">
                     <p class="text-sm font-medium">Affiliate ( optional )</p>
@@ -148,7 +152,6 @@
         function closeModal() {
             document.getElementById('myModal').style.display = 'none';
         }
-
         
     </script>
 @endsection

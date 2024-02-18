@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [CustomerController::class,'create'],)->name('client-create');
+Route::get('/payment', function () { return view('client.order'); })->name('client-order');
 Route::post('/', [CustomerController::class,'store'])->name('client-store');
 
 
