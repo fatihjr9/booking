@@ -12,6 +12,19 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
+                    <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan lalu</h5>
+                    <h5 class="text-xl font-bold">
+                        <?php
+                        $totalExpense = 0;
+                        foreach ($data as $item) {
+                            $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
+                            $totalExpense += $affiliateCount * 50000;
+                        }
+                        echo 'Rp ' . number_format($totalExpense, 0, ',', '.');
+                        ?>
+                    </h5>
+                </div>
+                <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
                     <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan ini</h5>
                     <h5 class="text-xl font-bold">
                         <?php
@@ -25,12 +38,17 @@
                     </h5>
                 </div>
                 <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
-                    <h5 class="text-base font-medium text-slate-500">Karyawan yang mendapatkan</h5>
-                    <h5 class="text-xl font-bold">Yanto</h5>
-                </div>
-                <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
-                    <h5 class="text-base font-medium text-slate-500">Tujuan Bank</h5>
-                    <h5 class="text-xl font-bold">Yanto</h5>
+                    <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan ini</h5>
+                    <h5 class="text-xl font-bold">
+                        <?php
+                        $totalExpense = 0;
+                        foreach ($data as $item) {
+                            $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
+                            $totalExpense += $affiliateCount * 50000;
+                        }
+                        echo 'Rp ' . number_format($totalExpense, 0, ',', '.');
+                        ?>
+                    </h5>
                 </div>
             </div>
             <div class="bg-white overflow-auto shadow-md sm:rounded-lg">

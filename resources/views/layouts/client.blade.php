@@ -11,12 +11,13 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script type="text/javascript"
         src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="SB-Mid-client-EbZpArANxHBj9XHL"></script>
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         <!-- Styles -->
         @livewireStyles
     </head>
@@ -28,6 +29,7 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/intlTelInput.min.js"></script>
         <script>
+             AOS.init();
             const input = document.querySelector("#phone");
             window.intlTelInput(input, {
               utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/utils.js",

@@ -55,7 +55,7 @@ class CustomerController extends Controller
         for ($i = 0; $i < $length; $i++) {
             $random .= rand(0, 1) ? rand(0, 9) : chr(rand(ord('a'), ord('z')));
         }
-
+    
         $no_invoice = 'TRX-'.Str::upper($random);
         // Send to DB
         $data = $request->validate([
@@ -70,47 +70,60 @@ class CustomerController extends Controller
             'amount'=> 'required|string', 
             'payment'=> 'required'
         ]);
-            // Other Logic Start
-            $data['menu'] = implode(',', $data['menu']);
-            $data['affiliate'] = $request->input('affiliate');
-            // Affiliate Code Setting
-            $codeAffiliate = $request->input('affiliate');
-            if (!empty($codeAffiliate)) {
-                $affiliate = Affiliate::where('url', $codeAffiliate)->first();
-                if ($affiliate) {
-                    $affiliate->increment('clicked_count');
-                } else {
-                    return redirect()->back()->with('error', 'Affiliate not found');
-                }
+    
+        // Other Logic Start
+        $data['menu'] = implode(',', $data['menu']);
+        $data['affiliate'] = $request->input('affiliate');
+        $selectedBookingTimes = $request->input('book_time');
+        // Affiliate Code Setting
+        $codeAffiliate = $request->input('affiliate');
+        if (!empty($codeAffiliate)) {
+            $affiliate = Affiliate::where('url', $codeAffiliate)->first();
+            if ($affiliate) {
+                $affiliate->increment('clicked_count');
+            } else {
+                return redirect()->back()->with('error', 'Affiliate not found');
             }
-            
-            // Availability Seats
-            $seats = Seat::whereDate('book_date', $data['book_date'])
-              ->where('available_time', $data['book_time'])
-              ->firstOrFail();
-            if ($seats->seat_left < $data['person']) {
-                return redirect()->back()->with('error', 'Seat fully booked');
-            }
-            $seats->seat_left -= $data['person'];
-            $seats->save();
-
-            // Clear session data
-            $request->session()->forget('selected_date');
-            $request->session()->forget('selected_time');
-
-            // End
-            $customer = customer::create($data);
-            $trx_id = $customer->trx_id;
-        // Midtrans Integration
-        $payload = [
-            'transaction_details' => [
-                'order_id' => $no_invoice,
-                'gross_amount' => $request->amount,
-            ],
-        ];
-        $snapToken = \Midtrans\Snap::getSnapToken($payload);
-        return view('client.order', compact('snapToken','no_invoice', 'data'));
+        }
+        
+        // Availability Seats
+        $seats = Seat::whereDate('book_date', $data['book_date'])
+            ->where('available_time', $data['book_time'])
+            ->firstOrFail();
+        if ($seats->seat_left < $data['person']) {
+            return redirect()->back()->with('error', 'Seat fully booked');
+        }
+        $seats->seat_left -= $data['person'];
+        $seats->save();
+    
+        // Clear session data
+        $request->session()->forget('selected_date');
+        $request->session()->forget('selected_time');
+    
+        // End
+        $customer = Customer::create($data);
+        // Payment Integration
+        if ($request->payment == 'Cash') {
+            return redirect()->route('client-success');
+        } elseif ($request->payment == 'Local Bank') {
+            // Midtrans Integration
+            $payload = [
+                'transaction_details' => [
+                    'order_id' => $no_invoice,
+                    'gross_amount' => $request->amount,
+                ],
+            ];
+            $snapToken = \Midtrans\Snap::getSnapToken($payload);
+            return view('client.order', compact('snapToken','no_invoice', 'data'));
+        // } elseif ($request->payment == 'Paypal') {
+        //     // Paypal Integration
+        //     $clientId = 'ASda69f80BRMgMxq-3iR9pBgVW3bVO_ER_UaEQr3iH6avrOokIl0xf4mRkaaAzS80jRYXnBs0ZZk368V';
+        //     return view('client.order', compact('clientId', 'data', 'no_invoice'));
+        } else {
+            return redirect()->back()->with('error', 'Invalid payment method selected.');
+        }
     }
+    
 
     public function destroy($id) {
         $customer = customer::findOrFail($id);

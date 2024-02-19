@@ -30,19 +30,19 @@
     </div>
     <button class="py-2 bg-black text-white rounded-lg" id="pay-button">Pay Now</button>
 </div>
-
-<script type="text/javascript">
+<script>
+  // Midtrans
     var payButton = document.getElementById('pay-button');
     payButton.addEventListener('click', function () {
       window.snap.pay('{{$snapToken}}', {
         onSuccess: function(result){
-          window.location.href='/'
+          window.location.href='/success'
         },
         onPending: function(result){
-          alert("wating your payment!"); console.log(result);
+          alert("wating your payment!");
         },
         onError: function(result){
-          alert("payment failed!"); console.log(result);
+          alert("payment failed!");
           window.location.href='/'
         },
         onClose: function(){

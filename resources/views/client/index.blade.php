@@ -3,15 +3,15 @@
     <style>
        #myModal {
         display: none; /* Sembunyikan modal secara default */
-    }
+        }
     </style>
     <div class="bg-white p-4 md:w-8/12 mx-auto border rounded-md">
         <h5 class="border-b pb-2 text-xl font-semibold">Reservation</h5>
-        <div class="flex flex-col space-y-0.5 my-2 border-b pb-4">
-            <p class="text-sm font-medium">Booking Time</p>
-            <form action="{{ route('client-create') }}" method="GET">
+        <div class="flex flex-col space-y-0.5 my-2">
+            <form action="{{ route('client-create') }}" method="GET" id="step1">
+                <p class="text-sm font-medium">Booking Time</p>
                 @csrf
-                <div class="grid grid-cols-2 items-center gap-x-2">
+                <div class="grid grid-cols-1 items-center gap-2">
                     <div class="bg-gray-50 flex justify-between py-1.5 border border-gray-300 text-gray-900 text-xs rounded-lg">
                         <input type="date" name="book_date" class="border-none bg-transparent text-sm py-0.5" id="" value="{{ session('selected_date') }}">
                         <button type="submit" class="text-sm mr-2 bg-orange-600 text-orange-100 p-1 rounded-md">
@@ -20,15 +20,23 @@
                             </svg>                                      
                         </button>
                     </div>
-                    <select class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" name="book_time" id="">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                         @foreach($seats as $seat)
-                            <option value="{{ $seat->available_time }}" {{ $selectedTime == $seat->available_time ? 'selected' : '' }}>{{ $seat->available_time }} - {{ $seat->seat_left }} seat left</option>
+                            <div class="flex items-center justify-between bg-gray-50 py-2 px-4 border border-gray-300 rounded-lg mb-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="book_time" value="{{ $seat->available_time }}" class="mr-2" {{ $seat->available_time == session('selected_time') ? 'checked' : '' }}>
+                                    <span>{{ $seat->available_time }} - {{ $seat->seat_left }} seat left</span>
+                                </label>
+                            </div>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
+                <button type="button" onclick="nextStep(2)" class="w-full py-2 rounded-lg text-white bg-black text-sm">
+                    Next                                      
+                </button>
             </form>            
         </div> 
-        <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col">
+        <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col" id="step2" style="display: none;">
             @csrf
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div class="flex flex-col space-y-0.5">
@@ -97,7 +105,7 @@
                     <p class="text-sm font-medium">Payment Method</p>
                     <select name="payment" id="" class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg">
                         <option value="Local Bank">Local Bank</option>
-                        {{-- <option value="Paypal">Paypal</option> --}}
+                        <option value="Paypal">Paypal</option>
                         <option value="Cash">Cash</option>
                     </select>
                 </div>
@@ -110,7 +118,12 @@
                     <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" readonly name="amount" id="">
                 </div>
             </div>
-            <button type="submit" class="w-full py-2 rounded-lg text-white bg-black text-sm">Book Now</button>
+            <div class="flex flex-row items-center gap-2">
+                <button type="button" onclick="prevStep(1)" class="w-full py-2 rounded-lg text-black bg-slate-400 text-sm">
+                    Back
+                </button>
+                <button type="submit" class="w-full py-2 rounded-lg text-white bg-black text-sm">Book Now</button>
+            </div>
         </form>
     </div>
     <script>
@@ -152,6 +165,30 @@
         function closeModal() {
             document.getElementById('myModal').style.display = 'none';
         }
-        
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Menandai radio button yang dipilih sebagai 'active'
+                this.closest('form').querySelectorAll('label').forEach(label => {
+                    label.classList.remove('active');
+                });
+                this.parentElement.classList.add('active');
+                
+                // Submit form
+                this.closest('form').submit();
+            });
+        });
+        // stepper
+        let currentStep = 1;
+
+        function nextStep(step) {
+            document.getElementById('step' + currentStep).style.display = 'none';
+            document.getElementById('step' + step).style.display = 'block';
+            currentStep = step;
+        }
+        function prevStep(step) {
+            document.getElementById('step' + currentStep).style.display = 'none';
+            document.getElementById('step' + step).style.display = 'block';
+            currentStep = step;
+        }
     </script>
 @endsection
