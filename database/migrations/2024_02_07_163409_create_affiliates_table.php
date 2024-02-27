@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('store_name');
             $table->string('manager');
             $table->string('email');
+            $table->integer('fees');
             $table->string('whatsapp');
             $table->string('bank_name');
             $table->string('account_numb');

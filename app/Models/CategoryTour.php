@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class menu extends Model
+class CategoryTour extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','category', 'description', 'price'];
+    protected $fillable = ['name'];
 }

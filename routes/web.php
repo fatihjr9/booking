@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\CategoryMenuController;
+use App\Http\Controllers\CategoryTourController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MenuController;
@@ -40,6 +42,14 @@ Route::middleware([
     Route::get('/admin/menu/edit/{id}', [MenuController::class, 'edit'])->name('admin-menu-edit');
     Route::put('/admin/menu/edit/{id}', [MenuController::class, 'update'])->name('admin-menu-update');
     Route::delete('/admin/menu/{id}', [MenuController::class, 'destroy'])->name('admin-menu-destroy');
+
+    // Category
+    Route::get('/admin/category/add', [CategoryMenuController::class, 'create'])->name('admin-category-create');
+    Route::post('/admin/category/add', [CategoryMenuController::class, 'store'])->name('admin-category-store');
+
+    // Category
+    Route::get('/admin/category-tour/add', [CategoryTourController::class, 'create'])->name('admin-category-tour-create');
+    Route::post('/admin/category-tour/add', [CategoryTourController::class, 'store'])->name('admin-category-tour-store');
     
     // class
     Route::get('/admin/class/add', [ClassesController::class, 'create'])->name('admin-class-create');

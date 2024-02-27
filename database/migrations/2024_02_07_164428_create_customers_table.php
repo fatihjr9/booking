@@ -23,7 +23,6 @@ return new class extends Migration
             $table->text('menu');
             $table->string('amount');
             $table->string('payment');
-            $table->string('status');
             $table->string('affiliate')->nullable();
             $table->timestamps();
         });

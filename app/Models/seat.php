@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class seat extends Model
 {
     use HasFactory;
-    protected $fillable = ['book_date', 'available_time', 'seat_left'];
+    protected $fillable = ['available_time', 'seat_left'];
 }

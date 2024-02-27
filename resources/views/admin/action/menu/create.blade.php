@@ -21,6 +21,17 @@
                             @enderror
                         </div>
                         <div class="flex flex-col space-y-1">
+                            <p>Category</p>
+                            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" name="category" id="">
+                                @foreach ($data as $item)
+                                    <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category')
+                                <p class="text-red-500 text-xs">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="flex flex-col space-y-1">
                             <p>Description</p>
                             <textarea class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" name="description" id=""></textarea>
                             @error('description')

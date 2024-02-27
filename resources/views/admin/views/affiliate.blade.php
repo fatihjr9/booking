@@ -10,47 +10,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
-                    <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan lalu</h5>
-                    <h5 class="text-xl font-bold">
-                        <?php
-                        $totalExpense = 0;
-                        foreach ($data as $item) {
-                            $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
-                            $totalExpense += $affiliateCount * 50000;
-                        }
-                        echo 'Rp ' . number_format($totalExpense, 0, ',', '.');
-                        ?>
-                    </h5>
-                </div>
-                <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
-                    <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan ini</h5>
-                    <h5 class="text-xl font-bold">
-                        <?php
-                        $totalExpense = 0;
-                        foreach ($data as $item) {
-                            $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
-                            $totalExpense += $affiliateCount * 50000;
-                        }
-                        echo 'Rp ' . number_format($totalExpense, 0, ',', '.');
-                        ?>
-                    </h5>
-                </div>
-                <div class="bg-white overflow-hidden shadow-md sm:rounded-lg p-4">
-                    <h5 class="text-base font-medium text-slate-500">Total Pengeluaran bulan ini</h5>
-                    <h5 class="text-xl font-bold">
-                        <?php
-                        $totalExpense = 0;
-                        foreach ($data as $item) {
-                            $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
-                            $totalExpense += $affiliateCount * 50000;
-                        }
-                        echo 'Rp ' . number_format($totalExpense, 0, ',', '.');
-                        ?>
-                    </h5>
-                </div>
-            </div>
             <div class="bg-white overflow-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-white">
@@ -71,6 +30,9 @@
                                 Whatsapp
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                Package Selection
+                            </th>
+                            <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                 URL
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -84,6 +46,12 @@
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                 Clicked Count
+                            </th>
+                            <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                Fee per Click
+                            </th>
+                            <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                Total Fee
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                 Action
@@ -109,6 +77,9 @@
                                     {{ $item->whatsapp }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                    {{ $item->category }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     {{ $item->url }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -117,6 +88,7 @@
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     {{ $item->account_numb }}
                                 </th>
+                                
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     {{ $item->account_holder }}
                                 </th>
@@ -125,6 +97,13 @@
                                         $affiliateCount = App\Models\customer::where('affiliate', $item->url)->count();
                                         echo $affiliateCount;
                                     ?>
+                                </th>
+                                
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                    {{ $item->fees }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                    {{ $item->fees * $affiliateCount }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap flex flex-row items-center gap-x-2">
                                     

@@ -9,6 +9,7 @@
                 <div class="flex flex-col gap-2">
                     <a href="{{ route('admin-menu-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Menu</a>
                     <a href="{{ route('admin-class-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Class</a>
+                    <a href="{{ route('admin-category-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Category</a>
                 </div>
             </div>
         </div>
@@ -62,11 +63,12 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach ($menus as $item)
-                        <div class="p-2 border-b border-slate-200 flex flex-row items-center justify-between hover:border hover:transition-all hover:shadow-sm hover:rounded-lg hover:px-4">
+                        <div class="p-2 border-b border-slate-200 flex flex-row items-start justify-between hover:border hover:transition-all hover:shadow-sm hover:rounded-lg hover:px-4">
                             <div class="flex flex-col">
                                 <div class="flex flex-col mb-2">
                                     <h5 class="font-semibold">{{ $item->name }}</h5>
-                                    <p class="text-slate-400 text-sm">{{ $item->description }}</p>
+                                    <p class="font-medium p-2 rounded-full bg-red-50 text-red-500 w-fit text-xs">{{ $item->category }}</p>
+                                    <p class="text-slate-400 text-sm truncate w-20">{{ $item->description }}</p>
                                 </div>
                                 <p class="font-medium text-sm">{{ Number::currency($item->price, 'IDR') }}</p>
                             </div>

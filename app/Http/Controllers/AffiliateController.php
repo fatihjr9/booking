@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use App\Models\affiliate;
+use App\Models\CategoryMenu;
 use App\Models\customer;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,8 @@ class AffiliateController extends Controller
     }
 
     public function create() {
-        return view('admin.action.affiliate.create');
+        $data = CategoryMenu::all();
+        return view('admin.action.affiliate.create', compact('data'));
     }
 
     public function store(Request $request) {
@@ -22,13 +24,15 @@ class AffiliateController extends Controller
             'store_name' => 'required',
             'manager'=>'required',
             'email'=>'required',
+            'category'=>'required',
             'whatsapp'=>'required|string',
             'bank_name'=>'required',
+            'fees'=>'required',
             'account_numb'=>'required|string',
             'account_holder'=>'required',
         ]);
         // Random URL
-        $rand = Str::random(mt_rand(2, 5));
+        $rand = Str::random(mt_rand(2, 8));
         $data['url'] = $data['manager'].'-'.$rand;
         // end random url
         affiliate::create($data);
@@ -40,5 +44,6 @@ class AffiliateController extends Controller
         $customer->delete();
         
         return redirect()->back()->with('success', 'Data customer berhasil dihapus');
-    }    
+    }
+    
 }

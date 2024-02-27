@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryMenu;
 use App\Models\Classes;
 use App\Models\menu;
 use Illuminate\Http\Request;
@@ -15,12 +16,14 @@ class MenuController extends Controller
     }
 
     public function create() {
-        return view('admin.action.menu.create');
+        $data = CategoryMenu::latest()->get();
+        return view('admin.action.menu.create', compact('data'));
     }
 
     public function store(Request $request) {
         $data = $request->validate([
             'name' => 'required',
+            'category' => 'required',
             'description' => 'required',
             'price' => 'required'
         ]);

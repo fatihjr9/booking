@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\affiliate;
-use App\Models\customer;
-use App\Models\menu;
+use App\Models\Affiliate;
+use App\Models\Classes;
+use App\Models\Customer;
+use App\Models\Menu;
+use App\Models\Seat;
 use Illuminate\Support\Str;
-use App\Models\seat;
 use Illuminate\Http\Request;
-use Midtrans\Transaction;
+use Illuminate\Support\Facades\Http;
 
 class CustomerController extends Controller
 {
@@ -19,45 +20,50 @@ class CustomerController extends Controller
         \Midtrans\Config::$isSanitized  = config('services.midtrans.isSanitized');
         \Midtrans\Config::$is3ds        = config('services.midtrans.is3ds');
     }
-
-    public function index() {
-        $data = customer::latest()->get();
-        // dd($data);
-        return view('admin.views.customer', compact('data'));
+public function create(Request $request)
+{
+    $menu = Menu::all();
+    $class = Classes::latest()->get();
+    
+    // Fetch seat data
+    $seats = Seat::all();
+    
+    // Prepare events array
+    $events = [];
+    foreach ($seats as $seat) {
+        // Convert string to DateTime object
+        $availableTime = new \DateTime($seat->available_time);
+        
+        // Format DateTime object
+        $formattedTime = $availableTime->format('Y-m-d\TH:i:s');
+        $seatLeftArray = explode(' ', $seat->seat_left);
+    
+        // Add 'Seat' prefix to each element of the array
+        $seatLeftArray = array_map(function($value) {
+            return $value . ' Seat Left';
+        }, $seatLeftArray);
+        $events[] = [
+            'title' => $seatLeftArray,
+            'start' => $formattedTime,
+        ];
     }
 
-    public function create(Request $request) {
-        // Dapatkan URL affiliate dari parameter request
-        $affiliateUrl = $request->session()->get('affiliate_url');
-        // Filter Seat by date
-        $dates = $request->input('book_date');
-        $seats = seat::whereDate('book_date', $dates)->get();
-        $menu = menu::latest()->get();
-        // Declaring input value
-        $setDate = $request->input('book_date');
-        $setTime = $request->input('book_time');
-        // Simpan nilai dalam session
-        $request->session()->put('selected_date', $setDate);
-        $request->session()->put('selected_time', $setTime);
-    
-        // Ambil nilai dari session untuk tanggal dan waktu yang dipilih
-        $selectedDate = $request->session()->get('selected_date');
-        $selectedTime = $request->session()->get('selected_time');
-    
-        return view('client.index', compact('seats','dates','menu', 'setDate', 'setTime', 'selectedTime', 'affiliateUrl'));
-    }
-    
-    
-    public function store(Request $request) {
-        // Set Random Code
+    return view('client.index', compact('class', 'menu', 'events'));
+}
+
+
+
+    // Fungsi untuk menyimpan pembelian tiket
+    public function store(Request $request)
+    {
+        // Set kode acak
         $length = 6;
         $random = '';
         for ($i = 0; $i < $length; $i++) {
             $random .= rand(0, 1) ? rand(0, 9) : chr(rand(ord('a'), ord('z')));
         }
-    
-        $no_invoice = 'TRX-'.Str::upper($random);
-        // Send to DB
+        $noInvoice = 'TRX-' . Str::upper($random);
+        // Kirim ke DB
         $data = $request->validate([
             'name' => 'required',
             'email' => 'required',
@@ -70,65 +76,72 @@ class CustomerController extends Controller
             'amount'=> 'required|string', 
             'payment'=> 'required'
         ]);
-    
-        // Other Logic Start
+        // Logika lainnya
         $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
         $selectedBookingTimes = $request->input('book_time');
-        // Affiliate Code Setting
+        // Pengaturan Kode Afiliasi
         $codeAffiliate = $request->input('affiliate');
         if (!empty($codeAffiliate)) {
             $affiliate = Affiliate::where('url', $codeAffiliate)->first();
             if ($affiliate) {
                 $affiliate->increment('clicked_count');
             } else {
-                return redirect()->back()->with('error', 'Affiliate not found');
+                return redirect()->back()->with('error', 'Afiliasi tidak ditemukan');
             }
         }
         
-        // Availability Seats
-        $seats = Seat::whereDate('book_date', $data['book_date'])
-            ->where('available_time', $data['book_time'])
-            ->firstOrFail();
-        if ($seats->seat_left < $data['person']) {
-            return redirect()->back()->with('error', 'Seat fully booked');
-        }
-        $seats->seat_left -= $data['person'];
-        $seats->save();
-    
-        // Clear session data
-        $request->session()->forget('selected_date');
-        $request->session()->forget('selected_time');
-    
-        // End
+        // Akhir
         $customer = Customer::create($data);
-        // Payment Integration
+        // Integrasi Pembayaran
         if ($request->payment == 'Cash') {
             return redirect()->route('client-success');
         } elseif ($request->payment == 'Local Bank') {
-            // Midtrans Integration
+            // Integrasi Midtrans
             $payload = [
                 'transaction_details' => [
-                    'order_id' => $no_invoice,
+                    'order_id' => $noInvoice,
                     'gross_amount' => $request->amount,
                 ],
             ];
             $snapToken = \Midtrans\Snap::getSnapToken($payload);
-            return view('client.order', compact('snapToken','no_invoice', 'data'));
-        // } elseif ($request->payment == 'Paypal') {
-        //     // Paypal Integration
-        //     $clientId = 'ASda69f80BRMgMxq-3iR9pBgVW3bVO_ER_UaEQr3iH6avrOokIl0xf4mRkaaAzS80jRYXnBs0ZZk368V';
-        //     return view('client.order', compact('clientId', 'data', 'no_invoice'));
+            return view('client.order', compact('snapToken','noInvoice', 'data'));
+        } elseif ($request->payment == 'Paypal') {
+            $response = Http::post('http://localhost:8000', $request->all());
+            if ($response->failed()) {
+                return redirect()->back()->with('error', 'Terjadi kesalahan saat pembayaran PayPal. Silakan coba lagi nanti.');
+            }
+            $signature = $response->json('signature');
+            // Integrasi Cashlez
+            $payload = [
+                'data' => [
+                    'referenceId' => $noInvoice,
+                    'amount' => $request->amount,
+                ],
+            ];
+            $signature = $this->createDigitalSignature($payload);
+            $response = Http::post('https://api-link.cashlez.com/generate_url_vendor', [
+                'request' => $payload, 
+                'signature' => $signature,
+            ]);
+            return $response->json();
         } else {
-            return redirect()->back()->with('error', 'Invalid payment method selected.');
+            return redirect()->back()->with('error', 'Metode pembayaran yang dipilih tidak valid.');
         }
     }
-    
 
-    public function destroy($id) {
-        $customer = customer::findOrFail($id);
+    // Fungsi untuk menampilkan pembelian tiket
+    public function index()
+    {
+        $data = Customer::latest()->get();
+        return view('admin.views.customer', compact('data'));
+    }
+
+    // Fungsi untuk menghapus data pelanggan
+    public function destroy($id)
+    {
+        $customer = Customer::findOrFail($id);
         $customer->delete();
-        
-        return redirect()->back()->with('success', 'Data customer berhasil dihapus');
-    }    
+        return redirect()->back()->with('success', 'Data pelanggan berhasil dihapus');
+    }
 }
