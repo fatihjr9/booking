@@ -1,5 +1,12 @@
 @extends('layouts.client')
 @section('content')
+<style>
+    .selected-event {
+       background-color: #14262b;
+       border: 1px solid #c0c0c0;
+       cursor: pointer;
+   }
+   </style>
         {{-- Step 1 --}}
         <form action="{{ route('client-create') }}" method="GET" id="step1" class="bg-[#09150f] p-2 rounded-2xl space-y-2 border-l border-slate-700">
             @csrf
@@ -153,11 +160,11 @@
                     <input class="hidden" readonly name="affiliate">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
-                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">            
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
                     </div>
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">Special Request</p>
-                        <textarea class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="birthday" id=""></textarea>
+                        <textarea class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="request" id=""></textarea>
                     </div>
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">Total</p>
@@ -284,56 +291,63 @@
         // Calendar load
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
-            const events = {!! json_encode($events) !!};        
+            const events = {!! json_encode($events) !!};                
+
+            let selectedEvent = null; // Variabel untuk menyimpan event yang sedang dipilih     
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 events: events,
                 eventClick: function(info) {
-                    const selectedTime = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const options = {locale:'id-ID', weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    const selectedTime = info.event.start.toLocaleDateString([], options);                    
                     document.getElementById('book_time').value = selectedTime;      
 
-                    // Menandai elemen yang diklik sebagai aktif
-                    const allEvents = document.querySelectorAll('.fc-event');
-                    allEvents.forEach(eventEl => {
-                        eventEl.classList.remove('active');
-                        eventEl.style.cursor = 'auto'; // Mengembalikan kursor ke nilai default
-                    });
-                    info.el.classList.add('active');
-                    info.el.style.cursor = 'pointer'; // Mengatur kursor menjadi pointer
-                }
+                    // Menghapus kelas selected-event dari event sebelumnya yang dipilih (jika ada)
+                    if (selectedEvent !== null) {
+                        selectedEvent.classList.remove('selected-event');
+                    }       
+
+                    // Menambahkan kelas selected-event pada event yang baru dipilih
+                    info.el.classList.add('selected-event');        
+
+                    // Menyimpan event yang baru dipilih
+                    selectedEvent = info.el;
+                },
+                eventClassNames: 'custom-event'
             });
             calendar.render();
         });
+
         document.addEventListener('DOMContentLoaded', function() {
-    const packageSelect = document.getElementById('package-selection');
-    const charterSection = document.getElementById('charter-selection');
-    const charterMenuItems = document.querySelectorAll('.menu-item[data-category="1"]');
-    const rideMenuItems = document.querySelectorAll('.menu-item[data-category="2"]');
+            const packageSelect = document.getElementById('package-selection');
+            const charterSection = document.getElementById('charter-selection');
+            const charterMenuItems = document.querySelectorAll('.menu-item[data-category="1"]');
+            const rideMenuItems = document.querySelectorAll('.menu-item[data-category="2"]');
 
-    packageSelect.addEventListener('change', function() {
-        const selectedValue = packageSelect.value;
+            packageSelect.addEventListener('change', function() {
+                const selectedValue = packageSelect.value;
 
-        // Menampilkan atau menyembunyikan section charter selection sesuai dengan value yang dipilih
-        charterSection.style.display = (selectedValue === 'charter') ? 'block' : 'none';
+                // Menampilkan atau menyembunyikan section charter selection sesuai dengan value yang dipilih
+                charterSection.style.display = (selectedValue === 'charter') ? 'block' : 'none';
 
-        // Menampilkan atau menyembunyikan menu item sesuai dengan value yang dipilih
-        if (selectedValue === 'charter') {
-            charterMenuItems.forEach(item => {
-                item.style.display = 'flex';
+                // Menampilkan atau menyembunyikan menu item sesuai dengan value yang dipilih
+                if (selectedValue === 'charter') {
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                } else {
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                }
             });
-            rideMenuItems.forEach(item => {
-                item.style.display = 'none';
-            });
-        } else {
-            charterMenuItems.forEach(item => {
-                item.style.display = 'none';
-            });
-            rideMenuItems.forEach(item => {
-                item.style.display = 'flex';
-            });
-        }
-    });
 });
 
     </script>

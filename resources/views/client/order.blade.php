@@ -1,33 +1,58 @@
 @extends('layouts.client')
 @section('content')
-<div class="flex flex-col w-6/12 mx-auto p-4 rounded-lg bg-white border drop-shadow-md">
-    <div class="grid grid-cols-1 space-y-2 my-4">
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">Name</h5>
-            <p class="text-lg font-semibold">{{ $data['name'] }}</p>
+<div class="flex flex-col bg-[#09150f] p-2 rounded-2xl space-y-2 border-l border-slate-700">
+  <h5 class="text-xl font-semibold text-white p-2">Payments</h5>
+    <div class="grid grid-cols-3 gap-6 bg-[#0d1818] p-4 rounded-2xl">
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Name</h5>
+            <p class="text-gray-400 pb-1">{{ $data['name'] }}</p>
         </div>
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">How much person</h5>
-            <p class="text-lg font-semibold">{{ $data['person'] }} persons</p>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Country</h5>
+            <p class="text-gray-400 pb-1">{{ $data['country'] }}</p>
         </div>
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">Menu</h5>
-            <p class="text-lg font-semibold">{{ $data['menu'] }}</p>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Email</h5>
+            <p class="text-gray-400 pb-1">{{ $data['email'] }}</p>
         </div>
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">Date and Time</h5>
-            <p class="text-lg font-semibold">{{ $data['book_time'] }}</p>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Phone</h5>
+            <p class="text-gray-400 pb-1">{{ $data['phone'] }}</p>
         </div>
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">Payment Method</h5>
-            <p class="text-lg font-semibold">{{ $data['payment'] }}</p>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">How much person</h5>
+            <p class="text-gray-400 pb-1">{{ $data['person'] }} persons</p>
         </div>
-        <div class="flex flex-col">
-            <h5 class="text-sm font-medium text-gray-600">Total</h5>
-            <p class="text-lg font-semibold">{{ $data['amount'] }}</p>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Menu</h5>
+            <p class="text-gray-400 pb-1">{{ $data['menu'] }}</p>
+        </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Party</h5>
+            <p class="text-gray-400 pb-1">{{ $data['party'] }}</p>
+        </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">request</h5>
+            <p class="text-gray-400 pb-1">{{ $data['request'] }}</p>
+        </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">birthday</h5>
+            <p class="text-gray-400 pb-1">{{ $data['birthday'] }}</p>
+        </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Date and Time</h5>
+            <p class="text-gray-400 pb-1">{{ $data['book_time'] }}</p>
+          </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Payment Method</h5>
+            <p class="text-gray-400 pb-1">{{ $data['payment'] }}</p>
+        </div>
+        <div class="flex flex-col border-b border-slate-800 justify-between space-y-2">
+            <h5 class="text-lg font-medium text-white">Total</h5>
+            <p class="text-gray-400 pb-1">{{ $data['amount'] }}</p>
         </div>
     </div>
-    <button class="py-2 bg-black text-white rounded-lg" id="pay-button">Pay Now</button>
+    <button class="w-full py-2 rounded-lg text-white bg-[#14262b] font-medium" id="pay-button">Pay Now</button>
 </div>
 <script>
   // Midtrans

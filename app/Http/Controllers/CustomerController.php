@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendEmail;
 use App\Models\Affiliate;
 use App\Models\Classes;
 use App\Models\Customer;
@@ -10,6 +11,7 @@ use App\Models\Seat;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
@@ -102,6 +104,7 @@ class CustomerController extends Controller
         $customer = Customer::create($data);
         // Integrasi Pembayaran
         if ($request->payment == 'Cash') {
+            Mail::to($request->email)->send(new SendEmail($data));
             return redirect()->route('client-success');
         } elseif ($request->payment == 'Local Bank') {
             // Integrasi Midtrans
