@@ -1,7 +1,6 @@
 @extends('layouts.client')
 @section('content')
 <div class="flex flex-col w-6/12 mx-auto p-4 rounded-lg bg-white border drop-shadow-md">
-    <h5 class="text-xl font-bold text-center border-b pb-4">Order no {{ $no_invoice }}</h5>
     <div class="grid grid-cols-1 space-y-2 my-4">
         <div class="flex flex-col">
             <h5 class="text-sm font-medium text-gray-600">Name</h5>
@@ -17,7 +16,7 @@
         </div>
         <div class="flex flex-col">
             <h5 class="text-sm font-medium text-gray-600">Date and Time</h5>
-            <p class="text-lg font-semibold">{{ $data['book_date'] }} - {{ $data['book_time'] }}</p>
+            <p class="text-lg font-semibold">{{ $data['book_time'] }}</p>
         </div>
         <div class="flex flex-col">
             <h5 class="text-sm font-medium text-gray-600">Payment Method</h5>

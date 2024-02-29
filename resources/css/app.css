@@ -5,3 +5,6 @@
 [x-cloak] {
     display: none;
 }
+ #calendar {
+    @apply bg-[#0d1818] p-4 rounded-2xl text-white
+ }

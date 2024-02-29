@@ -29,4 +29,28 @@ class SeatController extends Controller
         seat::create($data);
         return redirect()->route('admin-seat');
     }
+
+    public function edit($id) {
+        $seat = seat::findOrFail($id);
+        return view('admin.action.seat.edit', compact('seat'));
+    }
+    
+
+    public function update(Request $request, $id) {
+        $data = $request->validate([
+            'seat_left' => 'required'
+        ]);
+    
+        $class = seat::findOrFail($id);
+        $class->update($data);
+    
+        return redirect()->route('admin-seat');
+    }  
+
+    public function destroy($id) {
+        $seat = seat::findOrFail($id);
+        $seat->delete();
+        
+        return redirect()->back()->with('success', 'Data customer berhasil dihapus');
+    }
 }

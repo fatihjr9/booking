@@ -61,6 +61,9 @@ Route::middleware([
     Route::get('/admin/seat', [SeatController::class, 'index'])->name('admin-seat');
     Route::get('/admin/seat/add', [SeatController::class, 'create'])->name('admin-seat-create');
     Route::post('/admin/seat/add', [SeatController::class, 'store'])->name('admin-seat-store');
+    Route::get('/admin/seat/edit/{id}', [SeatController::class, 'edit'])->name('admin-seat-edit');
+    Route::put('/admin/seat/edit/{id}', [SeatController::class, 'update'])->name('admin-seat-update');
+    Route::delete('/admin/seat/{id}', [SeatController::class, 'destroy'])->name('admin-seat-destroy');
     // Affiliate
     Route::get('/admin/affiliate', [AffiliateController::class, 'index'])->name('admin-affiliate');
     Route::get('/admin/affiliate/add', [AffiliateController::class, 'create'])->name('admin-affiliate-create');

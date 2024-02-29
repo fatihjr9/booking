@@ -24,16 +24,35 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            <main class="p-6 md:px-12">
-                @yield('content')
-            </main>
+    <body class="font-sans antialiased bg-[#080d07]">
+        <div class="p-4">
+            <div class="bg-[#0d1818] border border-slate-700 rounded-md">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="hidden lg:flex flex-col justify-between w-96 p-4">
+                        <img class="w-28 object-cover bg-center rounded-2xl" src="{{ asset('/logo_pub.webp') }}" alt="">
+                        <div class="flex flex-col space-y-2">
+                            <p class="text-justify text-xs text-gray-400 font-medium">
+                                We offer you a special moment in Bali with your family and friends. 
+                                We operate SHIPWRECK BALI ROOFTOP BAR near the airport. 
+                                We will pass along the famous Kuta Beach in the Kuta and Legian areas, through the Beach Walk Shopping Mall, and along the busiest Legian Street.
+                                Amidst the many tourists, you will all be able to see your surroundings from a vehicle one level higher and enjoy yourself with the best music and drinks.
+                                Enjoy about 90〜120minutes of Beer Ship Pub Crawl.
+                            </p>
+                            <p class="text-justify text-xs text-gray-500 mt-2">
+                                ※Safety regulations allow passengers 10 years of age and older.
+                            </p>
+                        </div>
+                    </div>
+                    <main class="w-full">
+                        @yield('content')
+                    </main>
+                </div>                                   
+            </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/intlTelInput.min.js"></script>
-            <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+        
         <script>
-             AOS.init();
             const input = document.querySelector("#phone");
             window.intlTelInput(input, {
               utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/utils.js",

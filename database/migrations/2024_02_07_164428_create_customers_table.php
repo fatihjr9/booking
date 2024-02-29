@@ -18,12 +18,14 @@ return new class extends Migration
             $table->string('country');
             $table->string('phone');
             $table->string('person');
-            $table->date('book_date');
             $table->string('book_time');
             $table->text('menu');
             $table->string('amount');
             $table->string('payment');
             $table->string('affiliate')->nullable();
+            $table->text('request')->nullable();
+            $table->text('party')->nullable();
+            $table->text('birthday')->nullable();
             $table->timestamps();
         });
     }

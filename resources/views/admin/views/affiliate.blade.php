@@ -80,7 +80,7 @@
                                     {{ $item->category }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
-                                    {{ $item->url }}
+                                    <a href="{{ route('client-create', ['affiliate' => $item->url]) }}" target="_blank" class="text-blue-500 hover:underline">{{ $item->url }}</a>
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     {{ $item->bank_name }}
@@ -106,7 +106,6 @@
                                     {{ $item->fees * $affiliateCount }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap flex flex-row items-center gap-x-2">
-                                    
                                     <a href="" class="p-0.5 bg-yellow-50 text-yellow-500 rounded-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />

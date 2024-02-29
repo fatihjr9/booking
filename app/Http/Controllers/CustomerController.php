@@ -20,38 +20,40 @@ class CustomerController extends Controller
         \Midtrans\Config::$isSanitized  = config('services.midtrans.isSanitized');
         \Midtrans\Config::$is3ds        = config('services.midtrans.is3ds');
     }
-public function create(Request $request)
-{
-    $menu = Menu::all();
-    $class = Classes::latest()->get();
-    
-    // Fetch seat data
-    $seats = Seat::all();
-    
-    // Prepare events array
-    $events = [];
-    foreach ($seats as $seat) {
-        // Convert string to DateTime object
-        $availableTime = new \DateTime($seat->available_time);
-        
-        // Format DateTime object
-        $formattedTime = $availableTime->format('Y-m-d\TH:i:s');
-        $seatLeftArray = explode(' ', $seat->seat_left);
-    
-        // Add 'Seat' prefix to each element of the array
-        $seatLeftArray = array_map(function($value) {
-            return $value . ' Seat Left';
-        }, $seatLeftArray);
-        $events[] = [
-            'title' => $seatLeftArray,
-            'start' => $formattedTime,
-        ];
+    public function create(Request $request)
+    {
+        $menu = Menu::all();
+        $class = Classes::latest()->get();
+
+        // Fetch seat data
+        $seats = Seat::all();
+        $affiliateFromURL = $request->query('affiliate');
+
+        // Prepare events array
+        $events = [];
+        foreach ($seats as $seat) {
+            // Convert string to DateTime object
+            $availableTime = new \DateTime($seat->available_time);
+
+            // Format DateTime object
+            $formattedTime = $availableTime->format('Y-m-d\TH:i:s');
+            $seatLeftArray = explode(' ', $seat->seat_left);
+
+            // Add 'Seat' prefix to each element of the array
+            $seatLeftArray = array_map(function($value) {
+                return $value . ' Seat Left';
+            }, $seatLeftArray);
+            $events[] = [
+                'title' => $seatLeftArray,
+                'start' => $formattedTime,
+            ];
+        }
+
+        // Set session untuk tanggal dan waktu yang dipilih
+        $selectedTime = $request->session()->get('selected_time');
+
+        return view('client.index', compact('class', 'menu', 'events', 'selectedTime'));
     }
-
-    return view('client.index', compact('class', 'menu', 'events'));
-}
-
-
 
     // Fungsi untuk menyimpan pembelian tiket
     public function store(Request $request)
@@ -70,7 +72,6 @@ public function create(Request $request)
             'phone'=> 'required',
             'country'=> 'required',
             'person'=> 'required', 
-            'book_date'=> 'required',
             'book_time'=> 'required', 
             'menu'=> 'required|array', 
             'amount'=> 'required|string', 
@@ -79,7 +80,11 @@ public function create(Request $request)
         // Logika lainnya
         $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
+        $data['request'] = $request->input('request');
+        $data['party'] = $request->input('party');
+        $data['birthday'] = $request->input('birthday');
         $selectedBookingTimes = $request->input('book_time');
+
         // Pengaturan Kode Afiliasi
         $codeAffiliate = $request->input('affiliate');
         if (!empty($codeAffiliate)) {
@@ -90,6 +95,8 @@ public function create(Request $request)
                 return redirect()->back()->with('error', 'Afiliasi tidak ditemukan');
             }
         }
+        // Bersihkan data sesi
+        $request->session()->forget('selected_time');
         
         // Akhir
         $customer = Customer::create($data);
@@ -106,25 +113,6 @@ public function create(Request $request)
             ];
             $snapToken = \Midtrans\Snap::getSnapToken($payload);
             return view('client.order', compact('snapToken','noInvoice', 'data'));
-        } elseif ($request->payment == 'Paypal') {
-            $response = Http::post('http://localhost:8000', $request->all());
-            if ($response->failed()) {
-                return redirect()->back()->with('error', 'Terjadi kesalahan saat pembayaran PayPal. Silakan coba lagi nanti.');
-            }
-            $signature = $response->json('signature');
-            // Integrasi Cashlez
-            $payload = [
-                'data' => [
-                    'referenceId' => $noInvoice,
-                    'amount' => $request->amount,
-                ],
-            ];
-            $signature = $this->createDigitalSignature($payload);
-            $response = Http::post('https://api-link.cashlez.com/generate_url_vendor', [
-                'request' => $payload, 
-                'signature' => $signature,
-            ]);
-            return $response->json();
         } else {
             return redirect()->back()->with('error', 'Metode pembayaran yang dipilih tidak valid.');
         }
