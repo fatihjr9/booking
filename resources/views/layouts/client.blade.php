@@ -31,6 +31,9 @@
                     <div class="hidden lg:flex flex-col justify-between w-96 p-4">
                         <img class="w-28 object-cover bg-center rounded-2xl" src="{{ asset('/logo_pub.webp') }}" alt="">
                         <div class="flex flex-col space-y-2">
+                            <p class="text-justify text-xs text-red-400 font-bold">
+                                If you wish to use CASH, BANK WIRE, QRIS, or any kind of e-money, you cannot apply online. Please come directly to SHIPWRECK BALI ROOFTOP BAR &RESTO.
+                            </p>
                             <p class="text-justify text-xs text-gray-400 font-medium">
                                 We offer you a special moment in Bali with your family and friends. 
                                 We operate SHIPWRECK BALI ROOFTOP BAR near the airport. 
@@ -38,7 +41,7 @@
                                 Amidst the many tourists, you will all be able to see your surroundings from a vehicle one level higher and enjoy yourself with the best music and drinks.
                                 Enjoy about 90〜120minutes of Beer Ship Pub Crawl.
                             </p>
-                            <p class="text-justify text-xs text-gray-500 mt-2">
+                            <p class="text-justify text-xs text-gray-400 mt-2">
                                 ※Safety regulations allow passengers 10 years of age and older.
                             </p>
                         </div>

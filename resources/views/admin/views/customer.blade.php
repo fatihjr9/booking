@@ -16,6 +16,12 @@
                                     No
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                    Agreement
+                                </th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
+                                    Packages
+                                </th>
+                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     Customer Name
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -64,6 +70,12 @@
                             <tr class="bg-white border-b">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $loop->iteration }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $item->agreement }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $item->packages }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $item->name }}

@@ -72,8 +72,8 @@ class CustomerController extends Controller
             'name' => 'required',
             'email' => 'required',
             'phone'=> 'required',
+            'packages'=> 'required',
             'country'=> 'required',
-            'person'=> 'required', 
             'book_time'=> 'required', 
             'menu'=> 'required|array', 
             'amount'=> 'required|string', 
@@ -82,6 +82,7 @@ class CustomerController extends Controller
         // Logika lainnya
         $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
+        $data['person'] = $request->input('person');
         $data['request'] = $request->input('request');
         $data['party'] = $request->input('party');
         $data['birthday'] = $request->input('birthday');
@@ -103,22 +104,8 @@ class CustomerController extends Controller
         // Akhir
         $customer = Customer::create($data);
         // Integrasi Pembayaran
-        if ($request->payment == 'Cash') {
-            Mail::to($request->email)->send(new SendEmail($data));
-            return redirect()->route('client-success');
-        } elseif ($request->payment == 'Local Bank') {
-            // Integrasi Midtrans
-            $payload = [
-                'transaction_details' => [
-                    'order_id' => $noInvoice,
-                    'gross_amount' => $request->amount,
-                ],
-            ];
-            $snapToken = \Midtrans\Snap::getSnapToken($payload);
-            return view('client.order', compact('snapToken','noInvoice', 'data'));
-        } else {
-            return redirect()->back()->with('error', 'Metode pembayaran yang dipilih tidak valid.');
-        }
+        Mail::to($request->email)->send(new SendEmail($data));
+        return redirect()->route('client-success');
     }
 
     // Fungsi untuk menampilkan pembelian tiket

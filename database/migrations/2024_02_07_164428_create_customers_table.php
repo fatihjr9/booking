@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('email');
             $table->string('country');
             $table->string('phone');
-            $table->string('person');
+            $table->string('person')->nullable();
             $table->string('book_time');
             $table->text('menu');
+            $table->text('packages');
             $table->string('amount');
             $table->string('payment');
             $table->string('affiliate')->nullable();
