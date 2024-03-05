@@ -22,11 +22,21 @@ class SeatController extends Controller
     }
 
     public function store(Request $request) {
-        $data = $request->validate([
-            'available_time' => 'required',
-            'seat_left' => 'required'
+        $availableTimes = $request->input('available_time');
+        $seatLeft = $request->input('seat_left');
+    
+        // Validasi input jika diperlukan
+        $request->validate([
+            'available_time.*' => 'required',
+            'seat_left.*' => 'required'
         ]);
-        seat::create($data);
+    
+        foreach ($availableTimes as $key => $time) {
+            Seat::create([
+                'available_time' => $time,
+                'seat_left' => $seatLeft[$key]
+            ]);
+        }
         return redirect()->route('admin-seat');
     }
 

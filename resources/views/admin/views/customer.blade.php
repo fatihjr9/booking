@@ -132,6 +132,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="p-4">
+                    {{ $data->links() }}
+                </div>
             </div>
         </div>
     </div>

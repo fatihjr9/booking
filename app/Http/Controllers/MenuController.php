@@ -39,9 +39,7 @@ class MenuController extends Controller
 
     public function update(Request $request, $id) {
         $data = $request->validate([
-            'name' => 'required',
             'description' => 'required',
-            'price' => 'required'
         ]);
     
         $menu = menu::findOrFail($id);

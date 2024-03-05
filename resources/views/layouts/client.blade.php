@@ -29,7 +29,7 @@
             <div class="lg:bg-[#0d1818] lg:border border-slate-700 lg:rounded-md">
                 <div class="flex flex-col lg:flex-row gap-4">
                     <div class="hidden lg:flex flex-col justify-between w-96 p-4">
-                        <img class="w-28 object-cover bg-center rounded-2xl" src="{{ asset('/logo_pub.webp') }}" alt="">
+                        <img class="object-cover bg-center rounded-2xl" src="{{ asset('/pub.jpeg') }}" alt="">
                         <div class="flex flex-col space-y-2">
                             <p class="text-justify text-xs text-red-400 font-bold">
                                 If you wish to use CASH, BANK WIRE, QRIS, or any kind of e-money, you cannot apply online. Please come directly to SHIPWRECK BALI ROOFTOP BAR &RESTO.
@@ -46,7 +46,7 @@
                             </p>
                         </div>
                     </div>
-                    <main class="w-full">
+                    <main class="w-full bg-[#09150f] lg:border-l lg:border-slate-700 lg:rounded-2xl">
                         @yield('content')
                     </main>
                 </div>                                   

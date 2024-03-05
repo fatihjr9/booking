@@ -26,10 +26,12 @@ class CustomerController extends Controller
     {
         $menu = Menu::all();
         $class = Classes::latest()->get();
+        // affiliate
+        $affiliate = $request->query('affiliate');
+        $request->session()->put('affiliate', $affiliate);
 
         // Fetch seat data
         $seats = Seat::all();
-        $affiliateFromURL = $request->query('affiliate');
 
         // Prepare events array
         $events = [];
@@ -54,7 +56,7 @@ class CustomerController extends Controller
         // Set session untuk tanggal dan waktu yang dipilih
         $selectedTime = $request->session()->get('selected_time');
 
-        return view('client.index', compact('class', 'menu', 'events', 'selectedTime'));
+        return view('client.index', compact('class', 'menu', 'events', 'selectedTime', 'affiliate'));
     }
 
     // Fungsi untuk menyimpan pembelian tiket
@@ -86,19 +88,9 @@ class CustomerController extends Controller
         $data['party'] = $request->input('party');
         $data['birthday'] = $request->input('birthday');
 
-        // Pengaturan Kode Afiliasi
-        $codeAffiliate = $request->input('affiliate');
-        if (!empty($codeAffiliate)) {
-            $affiliate = Affiliate::where('url', $codeAffiliate)->first();
-            if ($affiliate) {
-                $affiliate->increment('clicked_count');
-            } else {
-                return redirect()->back()->with('error', 'Afiliasi tidak ditemukan');
-            }
-        }
         // Bersihkan data sesi
         $request->session()->forget('selected_time');
-        
+        $affiliate = $request->input('affiliate');
         // Akhir
         Mail::to($request->email)->send(new SendEmail($data));
         $customer = Customer::create($data);
@@ -109,7 +101,7 @@ class CustomerController extends Controller
     // Fungsi untuk menampilkan pembelian tiket
     public function index()
     {
-        $data = Customer::latest()->get();
+        $data = Customer::latest()->paginate(5);
         return view('admin.views.customer', compact('data'));
     }
 

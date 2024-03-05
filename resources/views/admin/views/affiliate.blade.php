@@ -33,9 +33,6 @@
                                 Package Selection
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
-                                URL
-                            </th>
-                            <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                 Bank Name
                             </th>
                             <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -80,9 +77,6 @@
                                     {{ $item->category }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
-                                    <a href="{{ route('client-create', ['affiliate' => $item->url]) }}" target="_blank" class="text-blue-500 hover:underline">{{ $item->url }}</a>
-                                </th>
-                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     {{ $item->bank_name }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -106,7 +100,7 @@
                                     {{ $item->fees * $affiliateCount }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap flex flex-row items-center gap-x-2">
-                                    <a href="" class="p-0.5 bg-yellow-50 text-yellow-500 rounded-sm">
+                                    <a href="" class="p-0.5 bg-orange-50 text-orange-500 rounded-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                         </svg>                                          
@@ -120,6 +114,14 @@
                                             </svg>                                          
                                         </button>
                                     </form>
+                                    <div  class="p-0.5 bg-violet-50 text-violet-500 rounded-sm">
+                                        <input type="text" class="hidden" value="{{ route('client-create', ['affiliate' => $item->url]) }}" id="shareLinkInput" readonly>
+                                        <button id="copyLinkButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3" />
+                                            </svg>                                                  
+                                        </button>                                
+                                    </div>
                                 </th>
                             </tr>
                         @endforeach
@@ -128,4 +130,23 @@
             </div>
         </div>
     </div>
+    <script>
+        // Ambil elemen-elemen yang dibutuhkan
+        const copyLinkButton = document.getElementById('copyLinkButton');
+        const shareLinkInput = document.getElementById('shareLinkInput');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+    
+        // Tambahkan event listener pada tombol copy link
+        copyLinkButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Hentikan perilaku default dari tombol
+    
+            // Salin URL ke clipboard
+            shareLinkInput.select();
+            shareLinkInput.setSelectionRange(0, 99999); /* For mobile devices */
+            document.execCommand("copy");
+    
+            // Beri umpan balik kepada pengguna bahwa link berhasil disalin
+            alert("Link berhasil disalin ke clipboard!");
+        });
+    </script>
 </x-app-layout>

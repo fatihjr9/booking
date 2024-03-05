@@ -25,7 +25,7 @@
    }
    </style>
         {{-- Step 1 --}}
-        <form action="{{ route('client-create') }}" method="GET" id="step1" class="bg-[#09150f] p-2 rounded-2xl space-y-2 border-l border-slate-700">
+        <form action="{{ route('client-create') }}" method="GET" id="step1" class=" p-2 space-y-2">
             @csrf
             <div id='calendar' data-selected-time="{{ $selectedTime }}" class="w-full lg:h-96 overflow-auto"></div>
             <div id="event-list-container">
@@ -39,7 +39,7 @@
         {{-- Step 2 --}}
         <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <section id="step2" style="display: none;" class=" bg-[#09150f] p-4 space-y-4  lg:border-l lg:border-slate-700 rounded-2xl h-96">
+            <section id="step2" style="display: none;" class="  p-4 space-y-4  lg:border-l lg:border-slate-700 h-96">
                 <div class="flex flex-col space-y-0.5">
                     <h5 class="text-xl font-bold mb-2 text-white">Would you prefer a charter or ride share?</h5>
                     <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" id="package-selection" name="packages">
@@ -56,7 +56,7 @@
                     </button>
                 </div>
             </section>
-            <section id="step3" style="display: none;" class="bg-[#09150f] p-4 lg:border-l lg:border-slate-700 rounded-2xl h-full">
+            <section id="step3" style="display: none;" class=" p-4 lg:border-l lg:border-slate-700 h-full">
                 <div class="flex flex-col space-y-2" id="charter-selection">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">How much person?</p>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <h5 class="text-xl font-bold mb-2 text-white">Packages</h5>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
                     @foreach ($menu as $item)
                     @if ($item->category === 'CHARTER PACKAGE')
                         @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
@@ -81,7 +81,7 @@
                                         <div class="flex flex-col">
                                             <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
                                             <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
-                                            <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+                                            <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
                                         <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
                                     </div>
@@ -99,7 +99,7 @@
                                         <div class="flex flex-col">
                                             <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
                                             <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
-                                            <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+                                            <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
                                         <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
                                     </div>
@@ -110,7 +110,7 @@
                         @endif
                     @endif
                 @endforeach
-                </div>
+                
                 <div class="flex flex-row items-center gap-x-2">
                     <button type="button" onclick="prevStep(2)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
                         Back
@@ -120,7 +120,7 @@
                     </button>
                 </div>
             </section>
-            <section id="step4" style="display: none;" class="bg-[#09150f] p-4  border-l border-slate-700 rounded-2xl">
+            <section id="step4" style="display: none;" class=" p-4 ">
                 <h5 class="text-xl font-bold mb-2 text-white">Extra Orders</h5>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @foreach ($menu as $item)
@@ -154,7 +154,7 @@
                     </button>
                 </div>
             </section>
-            <section id="step5" style="display: none;" class="bg-[#09150f] p-4  border-l border-slate-700 rounded-2xl">
+            <section id="step5" style="display: none;" class=" p-4 ">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">Name</p>
@@ -175,7 +175,7 @@
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
                     </div>
                     <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
-                    <input class="hidden" readonly name="affiliate">
+                    <input class="block" name="affiliate" value="{{ session('affiliate') }}">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
