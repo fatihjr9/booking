@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('menu');
             $table->text('packages');
             $table->string('amount');
-            $table->string('payment');
+            $table->string('agreement');
             $table->string('affiliate')->nullable();
             $table->text('request')->nullable();
             $table->text('party')->nullable();

@@ -76,8 +76,7 @@ class CustomerController extends Controller
             'country'=> 'required',
             'book_time'=> 'required', 
             'menu'=> 'required|array', 
-            'amount'=> 'required|string', 
-            'payment'=> 'required'
+            'amount'=> 'required|string',
         ]);
         // Logika lainnya
         $data['menu'] = implode(',', $data['menu']);
@@ -86,7 +85,6 @@ class CustomerController extends Controller
         $data['request'] = $request->input('request');
         $data['party'] = $request->input('party');
         $data['birthday'] = $request->input('birthday');
-        $selectedBookingTimes = $request->input('book_time');
 
         // Pengaturan Kode Afiliasi
         $codeAffiliate = $request->input('affiliate');
@@ -102,9 +100,9 @@ class CustomerController extends Controller
         $request->session()->forget('selected_time');
         
         // Akhir
+        Mail::to($request->email)->send(new SendEmail($data));
         $customer = Customer::create($data);
         // Integrasi Pembayaran
-        Mail::to($request->email)->send(new SendEmail($data));
         return redirect()->route('client-success');
     }
 

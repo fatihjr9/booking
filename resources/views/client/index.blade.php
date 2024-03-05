@@ -2,10 +2,14 @@
 @section('content')
 <style>
     .selected-event {
-       background-color: #14262b;
-       border: 1px solid #c0c0c0;
+        background-color: #14262b;
+        color: rgb(129 140 248);
        cursor: pointer;
    }
+   .selected-date {
+        background-color: #14262b;
+        color: rgb(129 140 248);
+    }
    #event-list li {
         background-color: #14262b;
         color: white;
@@ -15,14 +19,15 @@
         border: 1px solid #c0c0c0;
         cursor: pointer;
    }
-   #event-list :active {
-    @apply bg-indigo-800 text-white
+   #event-list li:hover {    
+    background-color: #14262b;
+    color: rgb(129 140 248);
    }
    </style>
         {{-- Step 1 --}}
         <form action="{{ route('client-create') }}" method="GET" id="step1" class="bg-[#09150f] p-2 rounded-2xl space-y-2 border-l border-slate-700">
             @csrf
-            <div id='calendar' data-selected-time="{{ $selectedTime }}" class="w-full h-96 overflow-y-auto"></div>
+            <div id='calendar' data-selected-time="{{ $selectedTime }}" class="w-full lg:h-96 overflow-auto"></div>
             <div id="event-list-container">
                 <h3 class="text-white text-xl font-bold mt-4 mb-2">Event List</h3>
                 <ul id="event-list" class="grid grid-cols-1 lg:grid-cols-3 gap-1"></ul>
@@ -34,7 +39,7 @@
         {{-- Step 2 --}}
         <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <section id="step2" style="display: none;" class=" bg-[#09150f] p-4 space-y-4  border-l border-slate-700 rounded-2xl h-screen">
+            <section id="step2" style="display: none;" class=" bg-[#09150f] p-4 space-y-4  lg:border-l lg:border-slate-700 rounded-2xl h-96">
                 <div class="flex flex-col space-y-0.5">
                     <h5 class="text-xl font-bold mb-2 text-white">Would you prefer a charter or ride share?</h5>
                     <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" id="package-selection" name="packages">
@@ -51,7 +56,7 @@
                     </button>
                 </div>
             </section>
-            <section id="step3" style="display: none;" class="bg-[#09150f] p-4  border-l border-slate-700 rounded-2xl">
+            <section id="step3" style="display: none;" class="bg-[#09150f] p-4 lg:border-l lg:border-slate-700 rounded-2xl h-full">
                 <div class="flex flex-col space-y-2" id="charter-selection">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">How much person?</p>
@@ -67,7 +72,7 @@
                 <h5 class="text-xl font-bold mb-2 text-white">Packages</h5>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @foreach ($menu as $item)
-                    @if ($item->category === 'CHARTER PACKAGE' || $item->category === 'EXTRA Orders')
+                    @if ($item->category === 'CHARTER PACKAGE')
                         @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
                             <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'CHARTER PACKAGE' ? '1' : '' }}">
                                 <div class="flex flex-row items-center gap-x-4">
@@ -85,7 +90,7 @@
                                 <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
                             </div>
                         @endif
-                    @elseif ($item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE' || $item->category === 'EXTRA Orders')
+                    @elseif ($item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE')
                         @if ($item->category !== 'CHARTER PACKAGE')
                             <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE' ? '2' : '' }}">
                                 <div class="flex flex-row items-center gap-x-4">
@@ -105,7 +110,6 @@
                         @endif
                     @endif
                 @endforeach
-                
                 </div>
                 <div class="flex flex-row items-center gap-x-2">
                     <button type="button" onclick="prevStep(2)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
@@ -117,6 +121,40 @@
                 </div>
             </section>
             <section id="step4" style="display: none;" class="bg-[#09150f] p-4  border-l border-slate-700 rounded-2xl">
+                <h5 class="text-xl font-bold mb-2 text-white">Extra Orders</h5>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    @foreach ($menu as $item)
+                    @if ($item->category === 'EXTRA Orders')
+                        @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE' || $item->category !== 'CHARTER PACKAGE')
+                            <div class="extra-order flex flex-row items-center justify-between mb-2 gap-4">
+                                <div class="flex flex-row items-center gap-x-4">
+                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-white rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                    <div class="flex flex-col gap-y-2">
+                                        <div class="flex flex-col">
+                                            <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
+                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
+                                            <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+                                        </div>
+                                        <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
+                                    </div>
+                                </div>
+                                <input type="number" class="quantity-input w-20 border border-gray-700 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
+                                <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
+                            </div>
+                        @endif
+                        @endif
+                    @endforeach
+                </div>
+                <div class="flex flex-row items-center gap-x-2">
+                    <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                        Back
+                    </button>
+                    <button type="button" onclick="nextStep(5)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                        Next                                      
+                    </button>
+                </div>
+            </section>
+            <section id="step5" style="display: none;" class="bg-[#09150f] p-4  border-l border-slate-700 rounded-2xl">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">Name</p>
@@ -136,7 +174,7 @@
                         <p class="text-sm font-medium text-white">Phone</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
                     </div>
-                    <input class="block text-white bg-indigo-900" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
+                    <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
                     <input class="hidden" readonly name="affiliate">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
@@ -151,31 +189,9 @@
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" readonly name="amount" id="">
                     </div>
                 </div>
-                <div class="flex flex-col gap-y-2 mt-2 w-11/12">
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">We are in good health and have not received any medical treatment from a physician or other health care provider for any illness or condition that would interfere with the operation of BEER SHIP PUB CRAWL.</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">We will always fasten our seatbelts and pledge not to get drunk.</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">We are responsible for any defacement or loss of clothing, jewelry or personal belongings.</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">Any injuries or accidents resulting from failure to follow BEER SHIP PUB CRAWL rules and staff instructions are our own responsibility, and we will not make any claims for refunds or damages in this case.</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">We acknowledge that we cannot cancel after payment. *It is possible to change the date within 2 years.</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-x-2">
-                        <input class="bg-[#0d1818]" type="checkbox" id="" name="agreement">
-                        <p class="text-justify text-xs text-gray-500">We promise to be at the meeting place, SHIPWRECK BALI ROOFTOP BAR & RESTO, at least 15 minutes before the meeting.</p>
-                    </div>
+                <div class="flex flex-row gap-2 mt-4 w-11/12">
+                    <input class="bg-[#0d1818]" type="checkbox" name="agreement" value="I Agree with terms and condition">
+                    <p class="text-justify text-xs text-gray-500">I Agree with all <a href="{{ route('client-agree') }}" class="underline" target="_blank"> terms and condition</a></p>
                 </div>
                 <div class="flex flex-row items-center gap-x-2 mt-4">
                     <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
@@ -198,6 +214,16 @@
                     totalPrice += price * quantity;
                 }
             });
+            document.querySelectorAll('.extra-order').forEach(item => {
+        const checkbox = item.querySelector('.menu-checkbox');
+        const quantityInput = item.querySelector('.quantity-input');
+        if (checkbox.checked && quantityInput.value !== '') {
+            const price = parseFloat(item.querySelector('.menu-price').innerText.replace(/[^\d.]/g, ''));
+            const quantity = parseInt(quantityInput.value);
+            totalPrice += price * quantity;
+        }
+    });
+            
             const amountInput = document.querySelector('input[name="amount"]');
             amountInput.value = totalPrice.toFixed(2);
             document.getElementById('total-price').innerText = 'Rp ' + (totalPrice || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -269,7 +295,12 @@
                 initialView: 'dayGridMonth',
                 dateClick: function(info) {
                     // Ambil tanggal yang diklik
-                    const clickedDate = info.date;              
+                    const clickedDate = info.date;
+                    const allDates = document.querySelectorAll('.fc-daygrid-day');
+                    allDates.forEach(date => {
+                        date.classList.remove('selected-date');
+                    });
+                    info.dayEl.classList.add('selected-date'); 
 
                     // Filter acara berdasarkan tanggal yang diklik
                     const clickedDateEvents = events.filter(event => {
@@ -311,7 +342,7 @@
             function handleEventSelection(event) {
                 // Tangani pemilihan acara
                 const options = {locale:'en-US', weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                const selectedTime = new Date(event.start).toLocaleDateString([], options);                    
+                const selectedTime = new Intl.DateTimeFormat('en-US', options).format(new Date(event.start));
                 document.getElementById('book_time').value = selectedTime;      
 
                 // Hapus kelas selected-event dari event sebelumnya yang dipilih (jika ada)
@@ -331,30 +362,45 @@
             const charterMenuItems = document.querySelectorAll('.menu-item[data-category="1"]');
             const rideMenuItems = document.querySelectorAll('.menu-item[data-category="2"]');
 
-            packageSelect.addEventListener('change', function() {
-                const selectedValue = packageSelect.value;
-
-                // Menampilkan atau menyembunyikan section charter selection sesuai dengan value yang dipilih
-                charterSection.style.display = (selectedValue === 'charter') ? 'block' : 'none';
-
-                // Menampilkan atau menyembunyikan menu item sesuai dengan value yang dipilih
-                if (selectedValue === 'charter') {
+            // Fungsi untuk menyesuaikan tampilan menu saat pilihan paket berubah
+            function adjustMenuDisplay(selectedValue) {
+                if (selectedValue === 'Charter Package (Up to 8 people)') {
+                    charterSection.style.display = 'block';
                     charterMenuItems.forEach(item => {
                         item.style.display = 'flex';
                     });
                     rideMenuItems.forEach(item => {
                         item.style.display = 'none';
+                    });
+                } else if (selectedValue === 'RIDE SHARE (Up to 8 people)') {
+                    charterSection.style.display = 'none';
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'flex';
                     });
                 } else {
+                    // Jika pilihan paket tidak sesuai, sembunyikan semua opsi menu
+                    charterSection.style.display = 'none';
                     charterMenuItems.forEach(item => {
                         item.style.display = 'none';
                     });
                     rideMenuItems.forEach(item => {
-                        item.style.display = 'flex';
+                        item.style.display = 'none';
                     });
                 }
+            }
+
+            // Panggil fungsi untuk menyesuaikan tampilan menu saat halaman dimuat
+            adjustMenuDisplay(packageSelect.value);
+
+            // Tambahkan event listener untuk memanggil fungsi saat pilihan paket berubah
+            packageSelect.addEventListener('change', function() {
+                adjustMenuDisplay(this.value);
             });
-});
+        });
+
 
     </script>
 @endsection

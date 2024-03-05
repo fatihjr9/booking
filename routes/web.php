@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CustomerController::class,'create'],)->name('client-create');
 Route::post('/', [CustomerController::class,'store'])->name('client-store');
 Route::get('/payment', function () { return view('client.order'); })->name('client-order');
+Route::get('/agreement', function () { return view('client.agreement'); })->name('client-agree');
 Route::get('/success', function () { return view('client.success'); })->name('client-success');
 
 

@@ -26,7 +26,7 @@
     </head>
     <body class="font-sans antialiased bg-[#080d07]">
         <div class="p-4">
-            <div class="bg-[#0d1818] border border-slate-700 rounded-md">
+            <div class="lg:bg-[#0d1818] lg:border border-slate-700 lg:rounded-md">
                 <div class="flex flex-col lg:flex-row gap-4">
                     <div class="hidden lg:flex flex-col justify-between w-96 p-4">
                         <img class="w-28 object-cover bg-center rounded-2xl" src="{{ asset('/logo_pub.webp') }}" alt="">

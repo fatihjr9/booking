@@ -52,9 +52,6 @@
                                     party
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
-                                    Payment Method
-                                </th>
-                                <th scope="col" class="px-6 py-3 whitespace-nowrap">
                                     Payment Amount
                                 </th>
                                 <th scope="col" class="px-6 py-3 whitespace-nowrap">
@@ -106,9 +103,6 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $item->party }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $item->payment }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ Number::currency($item->amount, 'IDR') }}

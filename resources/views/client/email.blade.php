@@ -105,7 +105,6 @@ a[x-apple-data-detectors] {
                         <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Selected Packages: <strong>{{ $data['packages'] }}</strong></p>
                         <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Ordered menu:  <strong>{{ $data['menu'] }}</strong></p>
                         <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Total order: <strong>Rp {{ $data['amount'] }}</strong></p>
-                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Payment method: <strong>{{ $data['payment'] }}</strong></p>
                      </tr>
                      @if(isset($data['birthday']) || isset($data['request']) || isset($data['party']))
                         <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
@@ -129,6 +128,16 @@ a[x-apple-data-detectors] {
                             </td>
                         </tr>
                     @endif
+                    <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
+                      <td align="left" style="padding:0;margin:0;">
+                      <h5 style="margin-bottom: .5rem; font-size:1rem; font-weight:700;font-family:arial, 'helvetica neue', helvetica, sans-serif;">Agreement</h5>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">1. We are in good health and have not received any medical treatment from a physician or other health care provider for any illness or condition that would interfere with the operation of BEER SHIP PUB CRAWL.</p>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">2. We will always fasten our seatbelts and pledge not to get drunk.</p>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">3. We are responsible for any defacement or loss of clothing, jewelry or personal belongings.</p>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">4. Any injuries or accidents resulting from failure to follow BEER SHIP PUB CRAWL rules and staff instructions are our own responsibility, and we will not make any claims for refunds or damages in this case.</p>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">5. We acknowledge that we cannot cancel after payment. *It is possible to change the date within 2 years.</p>
+                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">6. We promise to be at the meeting place, SHIPWRECK BALI ROOFTOP BAR & RESTO, at least 15 minutes before the meeting.</p>
+                   </tr>
                    </table>
                 </td>
                  </tr>
