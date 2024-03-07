@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\SendEmail;
 use App\Models\Affiliate;
+use phpseclib3\Crypt\RSA;
 use App\Models\Classes;
 use App\Models\Customer;
 use App\Models\Menu;
@@ -11,17 +12,11 @@ use App\Models\Seat;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\CryptoHelper;
 use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
-    public function __construct()
-    {
-        \Midtrans\Config::$serverKey    = config('services.midtrans.serverKey');
-        \Midtrans\Config::$isProduction = config('services.midtrans.isProduction');
-        \Midtrans\Config::$isSanitized  = config('services.midtrans.isSanitized');
-        \Midtrans\Config::$is3ds        = config('services.midtrans.is3ds');
-    }
     public function create(Request $request)
     {
         $menu = Menu::all();
@@ -58,7 +53,6 @@ class CustomerController extends Controller
 
         return view('client.index', compact('class', 'menu', 'events', 'selectedTime', 'affiliate'));
     }
-
     // Fungsi untuk menyimpan pembelian tiket
     public function store(Request $request)
     {
@@ -69,6 +63,7 @@ class CustomerController extends Controller
             $random .= rand(0, 1) ? rand(0, 9) : chr(rand(ord('a'), ord('z')));
         }
         $noInvoice = 'TRX-' . Str::upper($random);
+
         // Kirim ke DB
         $data = $request->validate([
             'name' => 'required',
@@ -80,6 +75,7 @@ class CustomerController extends Controller
             'menu'=> 'required|array', 
             'amount'=> 'required|string',
         ]);
+
         // Logika lainnya
         $data['menu'] = implode(',', $data['menu']);
         $data['affiliate'] = $request->input('affiliate');
@@ -87,15 +83,60 @@ class CustomerController extends Controller
         $data['request'] = $request->input('request');
         $data['party'] = $request->input('party');
         $data['birthday'] = $request->input('birthday');
+        // Callback 
+        $callback = route('client-success');
 
         // Bersihkan data sesi
         $request->session()->forget('selected_time');
         $affiliate = $request->input('affiliate');
-        // Akhir
-        Mail::to($request->email)->send(new SendEmail($data));
-        $customer = Customer::create($data);
-        // Integrasi Pembayaran
-        return redirect()->route('client-success');
+
+        // Load kunci privat dari penyimpanan
+        $privateKey = openssl_get_privatekey(file_get_contents(storage_path('priv-key.pem')));
+
+        // Persiapkan payload yang akan ditandatangani
+        $payloadToSign = json_encode([
+            "request" => [
+                "vendorIdentifier" => "CZ00TEST003",
+                "referenceId" => $noInvoice,
+                "entityId" => "23273",
+                "merchantName" => "Pubcrawl Shipwrecked",
+                "merchantDescription" => "",
+                "currencyCode" => "IDR",
+                "amount" => $request->amount,
+                "callbackSuccess" => $callback,
+                "callbackFailure" => "",
+                "message" => "",
+                "description" => $request->packages,
+                "transactionUsername" => "test03"
+            ]
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);        
+        
+        $signature = '';
+        if (openssl_sign($payloadToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256)) {
+            $signatureBase64 = base64_encode($signature);
+        } else {
+            $errorCode = openssl_error_string();
+        }
+        
+        // Integrasi Pembayaran 
+        $urls = 'https://api-link.cashlez.com/generate_url_vendor';
+        $payload = [
+            "data" => json_decode($payloadToSign, true),
+            "signature" => $signatureBase64
+        ];
+
+        $req = Http::withHeaders(['Content-Type' => 'application/json'])->post($urls, $payload);
+        $res = $req->json();
+        // dd($res);
+        if ($req->successful()) {
+            Mail::to($request->email)->send(new SendEmail($data));
+            Customer::create($data);
+            $generatedUrl = $res['data']['response']['generatedUrl'];
+            return view('client.payment', compact('generatedUrl'));
+        } else {
+            // Tampilkan pesan jika gagal terhubung ke gateway pembayaran
+            return response()->json(['message' => 'Failed to connect to payment gateway'], 500);
+        }
     }
 
     // Fungsi untuk menampilkan pembelian tiket

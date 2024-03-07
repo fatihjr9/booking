@@ -175,7 +175,7 @@
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
                     </div>
                     <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
-                    <input class="block" name="affiliate" value="{{ session('affiliate') }}">
+                    <input class="hidden" name="affiliate" value="{{ session('affiliate') }}">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
