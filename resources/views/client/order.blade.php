@@ -9,25 +9,4 @@
         </div>
     <button class="w-full py-2 rounded-lg text-white bg-[#14262b] font-medium">Pay Now</button>
 </div>
-<script>
-  // Midtrans
-    var payButton = document.getElementById('pay-button');
-    payButton.addEventListener('click', function () {
-      window.snap.pay('{{$snapToken}}', {
-        onSuccess: function(result){
-          window.location.href='/success'
-        },
-        onPending: function(result){
-          alert("wating your payment!");
-        },
-        onError: function(result){
-          alert("payment failed!");
-          window.location.href='/'
-        },
-        onClose: function(){
-          window.location.href='/'
-        }
-      })
-    });
-</script>
 @endsection

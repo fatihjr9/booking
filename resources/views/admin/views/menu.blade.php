@@ -16,8 +16,8 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 items-start gap-4">
-            <div class="flex flex-col space-y-4 bg-white p-4 rounded-lg shadow-sm">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 items-start gap-4">
+            {{-- <div class="flex flex-col space-y-4 bg-white p-4 rounded-lg shadow-sm">
                 <div class="flex flex-row items-center gap-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
@@ -53,7 +53,7 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
+            </div> --}}
             <div class="flex flex-col space-y-4 bg-white p-4 rounded-lg shadow-sm">
                 <div class="flex flex-row items-center gap-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -68,7 +68,7 @@
                                 <div class="flex flex-col mb-2">
                                     <h5 class="font-semibold">{{ $item->name }}</h5>
                                     <p class="font-medium p-2 rounded-full bg-red-50 text-red-500 w-fit text-xs">{{ $item->category }}</p>
-                                    <p class="text-slate-400 text-sm truncate w-20">{{ $item->description }}</p>
+                                    <p class="text-slate-400 text-sm truncate w-80">{{ $item->description }}</p>
                                 </div>
                                 <p class="font-medium text-sm">{{ Number::currency($item->price, 'IDR') }}</p>
                             </div>

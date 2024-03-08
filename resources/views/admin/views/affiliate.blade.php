@@ -115,12 +115,11 @@
                                         </button>
                                     </form>
                                     <div  class="p-0.5 bg-violet-50 text-violet-500 rounded-sm">
-                                        <input type="text" class="hidden" value="{{ route('client-create', ['affiliate' => $item->url]) }}" id="shareLinkInput" readonly>
-                                        <button id="copyLinkButton">
+                                        <a href="{{ route('client-create', ['affiliate' => $item->url]) }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3" />
                                             </svg>                                                  
-                                        </button>                                
+                                        </a>                                
                                     </div>
                                 </th>
                             </tr>
@@ -131,22 +130,5 @@
         </div>
     </div>
     <script>
-        // Ambil elemen-elemen yang dibutuhkan
-        const copyLinkButton = document.getElementById('copyLinkButton');
-        const shareLinkInput = document.getElementById('shareLinkInput');
-        const qrCodeContainer = document.getElementById('qrCodeContainer');
-    
-        // Tambahkan event listener pada tombol copy link
-        copyLinkButton.addEventListener('click', function(event) {
-            event.preventDefault(); // Hentikan perilaku default dari tombol
-    
-            // Salin URL ke clipboard
-            shareLinkInput.select();
-            shareLinkInput.setSelectionRange(0, 99999); /* For mobile devices */
-            document.execCommand("copy");
-    
-            // Beri umpan balik kepada pengguna bahwa link berhasil disalin
-            alert("Link berhasil disalin ke clipboard!");
-        });
     </script>
 </x-app-layout>

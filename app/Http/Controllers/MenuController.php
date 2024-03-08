@@ -11,7 +11,7 @@ class MenuController extends Controller
 {
     public function index() {
         $classes = Classes::latest()->get();
-        $menus = menu::latest()->get();
+        $menus = menu::all();
         return view('admin.views.menu', compact('menus','classes'));
     }
 
@@ -40,6 +40,7 @@ class MenuController extends Controller
     public function update(Request $request, $id) {
         $data = $request->validate([
             'description' => 'required',
+            'price' => 'required'
         ]);
     
         $menu = menu::findOrFail($id);

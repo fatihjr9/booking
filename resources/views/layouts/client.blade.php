@@ -17,20 +17,17 @@
         <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid/main.css" rel="stylesheet" />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script type="text/javascript"
-        src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="SB-Mid-client-EbZpArANxHBj9XHL"></script>
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         <!-- Styles -->
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-[#080d07]">
         <div class="p-4">
-            <div class="lg:bg-[#0d1818] lg:border border-slate-700 lg:rounded-md">
+            <div class="bg-[#0d1818] lg:border border-slate-700 rounded-xl">
                 <div class="flex flex-col lg:flex-row gap-4">
-                    <div class="hidden lg:flex flex-col justify-between w-96 p-4">
+                    <div class="flex flex-col lg:justify-between lg:w-96 p-4 mx-auto lg:ml-auto">
                         <img class="object-cover bg-center rounded-2xl" src="{{ asset('/pub.jpeg') }}" alt="">
-                        <div class="flex flex-col space-y-2">
+                        <div class="flex flex-col space-y-2 mt-6 lg:mt-0">
                             <p class="text-justify text-xs text-red-400 font-bold">
                                 If you wish to use CASH, BANK WIRE, QRIS, or any kind of e-money, you cannot apply online. Please come directly to SHIPWRECK BALI ROOFTOP BAR &RESTO.
                             </p>

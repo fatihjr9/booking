@@ -32,11 +32,11 @@
                             @enderror
                         </div>
                         <div class="flex flex-col space-y-1">
-                            <p>Description</p>
+                            <p>Description ( Optional )</p>
                             <textarea class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" name="description" id=""></textarea>
-                            @error('description')
+                            {{-- @error('description')
                                 <p class="text-red-500 text-xs">{{ $message }}</p>
-                            @enderror
+                            @enderror --}}
                         </div>
                         <div class="flex flex-col space-y-1">
                             <p>Price</p>

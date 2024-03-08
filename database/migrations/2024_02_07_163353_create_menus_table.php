@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('name');
             $table->text('category');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->text('price');
             $table->timestamps();
         });

@@ -99,7 +99,7 @@ class CustomerController extends Controller
                 "vendorIdentifier" => "CZ00TEST003",
                 "referenceId" => $noInvoice,
                 "entityId" => "23273",
-                "merchantName" => "Pubcrawl Shipwrecked",
+                "merchantName" => "BEER SHIP PUB CRAWL",
                 "merchantDescription" => "",
                 "currencyCode" => "IDR",
                 "amount" => $request->amount,

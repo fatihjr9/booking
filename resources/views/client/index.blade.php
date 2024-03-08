@@ -25,7 +25,7 @@
    }
    </style>
         {{-- Step 1 --}}
-        <form action="{{ route('client-create') }}" method="GET" id="step1" class=" p-2 space-y-2">
+        <form action="{{ route('client-create') }}" method="GET" id="step1" class="p-2 space-y-2">
             @csrf
             <div id='calendar' data-selected-time="{{ $selectedTime }}" class="w-full lg:h-96 overflow-auto"></div>
             <div id="event-list-container">
@@ -39,7 +39,7 @@
         {{-- Step 2 --}}
         <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <section id="step2" style="display: none;" class="  p-4 space-y-4  lg:border-l lg:border-slate-700 h-96">
+            <section id="step2" style="display: none;" class="p-4 space-y-4  lg:border-l lg:border-slate-700 h-96">
                 <div class="flex flex-col space-y-0.5">
                     <h5 class="text-xl font-bold mb-2 text-white">Would you prefer a charter or ride share?</h5>
                     <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" id="package-selection" name="packages">
@@ -56,7 +56,7 @@
                     </button>
                 </div>
             </section>
-            <section id="step3" style="display: none;" class=" p-4 lg:border-l lg:border-slate-700 h-full">
+            <section id="step3" style="display: none;" class=" p-4 lg:border-l lg:border-slate-700 h-full mt-4">
                 <div class="flex flex-col space-y-2" id="charter-selection">
                     <div class="flex flex-col space-y-0.5">
                         <p class="text-sm font-medium text-white">How much person?</p>
@@ -76,17 +76,19 @@
                         @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
                             <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'CHARTER PACKAGE' ? '1' : '' }}">
                                 <div class="flex flex-row items-center gap-x-4">
-                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-white rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
                                     <div class="flex flex-col gap-y-2">
                                         <div class="flex flex-col">
                                             <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
-                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
+                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
                                             <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
-                                        <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
+                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
                                     </div>
                                 </div>
-                                <input type="number" class="quantity-input w-20 border border-gray-700 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
+                                <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                    <option value="1" selected>1</option>
+                                </select>                                
                                 <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
                             </div>
                         @endif
@@ -94,17 +96,26 @@
                         @if ($item->category !== 'CHARTER PACKAGE')
                             <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE' ? '2' : '' }}">
                                 <div class="flex flex-row items-center gap-x-4">
-                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-white rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
                                     <div class="flex flex-col gap-y-2">
                                         <div class="flex flex-col">
                                             <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
-                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
+                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
                                             <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
-                                        <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
+                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
                                     </div>
                                 </div>
-                                <input type="number" class="quantity-input w-20 border border-gray-700 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
+                                <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>                                
                                 <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
                             </div>
                         @endif
@@ -120,38 +131,50 @@
                     </button>
                 </div>
             </section>
-            <section id="step4" style="display: none;" class=" p-4 ">
-                <h5 class="text-xl font-bold mb-2 text-white">Extra Orders</h5>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    @foreach ($menu as $item)
-                    @if ($item->category === 'EXTRA Orders')
-                        @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE' || $item->category !== 'CHARTER PACKAGE')
-                            <div class="extra-order flex flex-row items-center justify-between mb-2 gap-4">
-                                <div class="flex flex-row items-center gap-x-4">
-                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-white rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
-                                    <div class="flex flex-col gap-y-2">
-                                        <div class="flex flex-col">
-                                            <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
-                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md">{{ $item->category }}</h5>
-                                            <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+            <section id="step4" style="display: none;">
+                <img src="{{ asset('extraorder.jpeg') }}" alt="" class="lg:rounded-t-xl mb-4">
+                <div class="p-4">
+                    <h5 class="text-xl font-bold mb-2 text-white">Extra Orders</h5>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        @foreach ($menu as $item)
+                        @if ($item->category === 'EXTRA Orders')
+                            @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE' || $item->category !== 'CHARTER PACKAGE')
+                                <div class="extra-order flex flex-row items-center justify-between mb-2 gap-4">
+                                    <div class="flex flex-row items-center gap-x-4">
+                                        <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                        <div class="flex flex-col gap-y-2">
+                                            <div class="flex flex-col">
+                                                <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
+                                                <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
+                                                <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+                                            </div>
+                                            <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
                                         </div>
-                                        <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
                                     </div>
+                                    <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                    </select>
+                                    <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
                                 </div>
-                                <input type="number" class="quantity-input w-20 border border-gray-700 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
-                                <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
-                            </div>
-                        @endif
-                        @endif
-                    @endforeach
-                </div>
-                <div class="flex flex-row items-center gap-x-2">
-                    <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
-                        Back
-                    </button>
-                    <button type="button" onclick="nextStep(5)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
-                        Next                                      
-                    </button>
+                            @endif
+                            @endif
+                        @endforeach
+                    </div>
+                    <div class="flex flex-row items-center gap-x-2">
+                        <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                            Back
+                        </button>
+                        <button type="button" onclick="nextStep(5)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                            Next                                      
+                        </button>
+                    </div>
                 </div>
             </section>
             <section id="step5" style="display: none;" class=" p-4 ">
@@ -202,6 +225,9 @@
             </section>
         </form>
     <script>
+        function preventRefresh(event) {
+            event.preventDefault();
+        }
         // update price
         function updateTotalPrice() {
             let totalPrice = 0;
