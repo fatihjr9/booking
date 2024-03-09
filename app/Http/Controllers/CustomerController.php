@@ -106,7 +106,7 @@ class CustomerController extends Controller
                 "callbackSuccess" => $callback,
                 "callbackFailure" => "",
                 "message" => "",
-                "description" => $request->packages,
+                "description" => $request->packages . "\n" . implode(', ', $request->menu),
                 "transactionUsername" => "test03"
             ]
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);        

@@ -70,7 +70,6 @@
                     </div>
                 </div>
                 <h5 class="text-xl font-bold mb-2 text-white">Packages</h5>
-                
                     @foreach ($menu as $item)
                     @if ($item->category === 'CHARTER PACKAGE')
                         @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
@@ -83,7 +82,11 @@
                                             <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
                                             <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
-                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                        @php
+                                            $formattedPrice = Number::currency($item->price, 'IDR');
+                                            $formattedPrice = rtrim(rtrim($formattedPrice, '0'), '.');                                            
+                                        @endphp
+                                        <h5 class="menu-price font-semibold text-green-500">{{ $formattedPrice }}</h5>                                    
                                     </div>
                                 </div>
                                 <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
@@ -103,7 +106,11 @@
                                             <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
                                             <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
                                         </div>
-                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                        @php
+                                            $formattedPrice = Number::currency($item->price, 'IDR');
+                                            $formattedPrice = rtrim(rtrim($formattedPrice, '0'), '.');                                            
+                                        @endphp
+                                        <h5 class="menu-price font-semibold text-green-500">{{ $formattedPrice }}</h5>
                                     </div>
                                 </div>
                                 <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
@@ -148,7 +155,11 @@
                                                 <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
                                                 <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
                                             </div>
-                                            <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                            @php
+                                                $formattedPrice = Number::currency($item->price, 'IDR');
+                                                $formattedPrice = rtrim(rtrim($formattedPrice, '0'), '.');                                            
+                                            @endphp
+                                            <h5 class="menu-price font-semibold text-green-500">{{ $formattedPrice }}</h5>
                                         </div>
                                     </div>
                                     <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
@@ -178,46 +189,53 @@
                 </div>
             </section>
             <section id="step5" style="display: none;" class=" p-4 ">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex flex-col space-y-0.5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Name</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="name" id="">
                     </div>
-                    <div class="flex flex-col space-y-0.5">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Email</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="email" name="email" id="">
                     </div>
-                    <div class="flex flex-col space-y-0.5">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Country</p>
                         <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" name="country" id="">
                             <x-country/>
                         </select>
                     </div>
-                    <div class="flex flex-col space-y-0.5">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Phone</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
                     </div>
                     <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
                     <input class="hidden" name="affiliate" value="{{ session('affiliate') }}">
-                    <div class="flex flex-col space-y-0.5">
-                        <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
+                    <div class="flex flex-col space-y-0.5 justify-between">
+                        <p class="text-xs font-medium text-white whitespace-nowrap">If you have a birthday person, please let us know his/her age and name.</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
                     </div>
-                    <div class="flex flex-col space-y-0.5">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Special Request</p>
-                        <textarea class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="request" id=""></textarea>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="request">
                     </div>
-                    <div class="flex flex-col space-y-0.5">
+                    <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Total</p>
-                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" readonly name="amount" id="">
-                    </div>
+                        @php
+                            $formattedTotal = '';
+                            if ($item->amount !== null) {
+                                $formattedTotal = 'IDR ' . Number::currency($item->amount, 'IDR');
+                                $formattedTotal = rtrim(rtrim($formattedTotal, '0'), '.');  
+                            }
+                        @endphp
+                        <h5 class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg pl-4" name="amount">{{ $formattedTotal }}</h5>
+                    </div>                     
                 </div>
                 <div class="flex flex-row gap-2 mt-4 w-11/12">
                     <input class="bg-[#0d1818]" type="checkbox" name="agreement" value="I Agree with terms and condition">
                     <p class="text-justify text-xs text-gray-500">I Agree with all <a href="{{ route('client-agree') }}" class="underline" target="_blank"> terms and condition</a></p>
                 </div>
                 <div class="flex flex-row items-center gap-x-2 mt-4">
-                    <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                    <button type="button" onclick="prevStep(4)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
                         Back
                     </button>
                     <button type="submit" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">Confirm</button>
@@ -225,34 +243,41 @@
             </section>
         </form>
     <script>
-        function preventRefresh(event) {
-            event.preventDefault();
-        }
         // update price
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(amount);
+        }
         function updateTotalPrice() {
             let totalPrice = 0;
             document.querySelectorAll('.menu-item').forEach(item => {
                 const checkbox = item.querySelector('input[type="checkbox"]');
                 const quantityInput = item.querySelector('.quantity-input');
+                const priceText = item.querySelector('.menu-price').innerText;
+
                 if (checkbox.checked && quantityInput.value !== '') {
-                    const price = parseFloat(item.querySelector('.menu-price').innerText.replace(/[^\d.]/g, ''));
+                    const price = parseFloat(priceText.replace(/[^\d.]/g, ''));
                     const quantity = parseInt(quantityInput.value);
                     totalPrice += price * quantity;
                 }
             });
+
             document.querySelectorAll('.extra-order').forEach(item => {
-        const checkbox = item.querySelector('.menu-checkbox');
-        const quantityInput = item.querySelector('.quantity-input');
-        if (checkbox.checked && quantityInput.value !== '') {
-            const price = parseFloat(item.querySelector('.menu-price').innerText.replace(/[^\d.]/g, ''));
-            const quantity = parseInt(quantityInput.value);
-            totalPrice += price * quantity;
-        }
-    });
-            
-            const amountInput = document.querySelector('input[name="amount"]');
-            amountInput.value = totalPrice.toFixed(2);
-            document.getElementById('total-price').innerText = 'Rp ' + (totalPrice || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                const checkbox = item.querySelector('.menu-checkbox');
+                const quantityInput = item.querySelector('.quantity-input');
+                const priceText = item.querySelector('.menu-price').innerText;
+
+                if (checkbox.checked && quantityInput.value !== '') {
+                    const price = Number(priceText.replace(/[^\d.]/g, ''));// Ambil nilai harga dari teks harga
+                    const quantity = parseInt(quantityInput.value);
+                    totalPrice += price * quantity;
+                }
+            });
+
+            const amountH5 = document.querySelector('h5[name="amount"]');
+            amountH5.innerText = formatCurrency(totalPrice);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -417,16 +442,32 @@
                     });
                 }
             }
-
             // Panggil fungsi untuk menyesuaikan tampilan menu saat halaman dimuat
             adjustMenuDisplay(packageSelect.value);
-
             // Tambahkan event listener untuk memanggil fungsi saat pilihan paket berubah
             packageSelect.addEventListener('change', function() {
                 adjustMenuDisplay(this.value);
             });
         });
+        function formatCurrency(amount) {
+        const formattedAmount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+        return formattedAmount.replace(/\D00(?=\D*$)/, '');
+    }
+
+    // Fungsi untuk memperbarui nilai amount saat input berubah
+    function updateAmount() {
+    const amountInput = document.querySelector('input[name="amount"]');
+    const totalPrice = parseFloat(amountInput.value);
+    amountInput.value = formatCurrency(totalPrice);
+}
 
 
+    // Panggil fungsi updateAmount saat halaman dimuat dan saat input berubah
+    document.addEventListener('DOMContentLoaded', function() {
+        updateAmount();
+        document.querySelectorAll('input[name="amount"]').forEach(input => {
+            input.addEventListener('input', updateAmount);
+        });
+    });
     </script>
 @endsection

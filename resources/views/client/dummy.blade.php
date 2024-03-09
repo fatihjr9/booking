@@ -1,152 +1,224 @@
 @extends('layouts.client')
 @section('content')
-    <style>
-       #myModal {
-        display: none; /* Sembunyikan modal secara default */
-        }
-    </style>
-    <div class="bg-white p-4 md:w-8/12 mx-auto border rounded-md">
-        <h5 class="border-b pb-2 text-xl font-semibold">Reservation</h5>
-        <div class="flex flex-col space-y-0.5 my-2">
-            <form action="{{ route('client-create') }}" method="GET" id="step1">
-                <p class="text-sm font-medium">Booking Time</p>
-                @csrf
-                <div class="grid grid-cols-1 items-center gap-2">
-                    <div class="bg-gray-50 flex justify-between py-1.5 border border-gray-300 text-gray-900 text-xs rounded-lg">
-                        <input type="date" name="book_date" class="border-none bg-transparent text-sm py-0.5" id="" value="{{ session('selected_date') }}">
-                        <button type="submit" class="text-sm mr-2 bg-orange-600 text-orange-100 p-1 rounded-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                            </svg>                                      
-                        </button>
+<style>
+    .selected-event {
+        background-color: #14262b;
+        color: rgb(129 140 248);
+       cursor: pointer;
+   }
+   .selected-date {
+        background-color: #14262b;
+        color: rgb(129 140 248);
+    }
+   #event-list li {
+        background-color: #14262b;
+        color: white;
+        margin-bottom: .5rem;
+        padding: .5rem 1rem;
+        border-radius: .5rem;
+        border: 1px solid #c0c0c0;
+        cursor: pointer;
+   }
+   #event-list li:hover {    
+    background-color: #14262b;
+    color: rgb(129 140 248);
+   }
+   </style>
+        {{-- Step 1 --}}
+        <form action="{{ route('client-create') }}" method="GET" id="step1" class="p-2 space-y-2">
+            @csrf
+            <div id='calendar' data-selected-time="{{ $selectedTime }}" class="w-full lg:h-96 overflow-auto"></div>
+            <div id="event-list-container">
+                <h3 class="text-white text-xl font-bold mt-4 mb-2">Event List</h3>
+                <ul id="event-list" class="grid grid-cols-1 lg:grid-cols-3 gap-1"></ul>
+            </div>            
+            <button type="button" onclick="nextStep(2)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                Next                                      
+            </button>
+        </form>
+        {{-- Step 2 --}}
+        <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data">
+            @csrf<section id="step2" style="display: none;" class="p-4 space-y-4  lg:border-l lg:border-slate-700 h-96">
+                <div class="flex flex-col space-y-0.5">
+                    <h5 class="text-xl font-bold mb-2 text-white">Would you prefer a charter or ride share?</h5>
+                    <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" id="package-selection" name="packages">
+                        <option value="Charter Package (Up to 8 people)" data-item="1">Charter Package (Up to 8 people)</option>
+                        <option value="RIDE SHARE (Up to 8 people)" data-item="2">Ride Share (Up to 8 people)</option>
+                    </select>
+                </div>
+                <div class="flex flex-row items-center gap-x-2">
+                    <button type="button" onclick="prevStep(1)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                        Back
+                    </button>
+                    <button type="button" onclick="nextStep(3)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                        Next                                      
+                    </button>
+                </div>
+            </section>
+            <section id="step3" style="display: none;" class=" p-4 lg:border-l lg:border-slate-700 h-full mt-4">
+                <div class="flex flex-col space-y-2" id="charter-selection">
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">How much person?</p>
+                        <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" name="person" id="">
+                            <x-person/>
+                        </select>            
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        @foreach($seats as $seat)
-                            <div class="flex items-center justify-between bg-gray-50 py-2 px-4 border border-gray-300 rounded-lg mb-2">
-                                <label class="flex items-center">
-                                    <input type="radio" name="book_time" value="{{ $seat->available_time }}" class="mr-2" {{ $seat->available_time == session('selected_time') ? 'checked' : '' }}>
-                                    <span>{{ $seat->available_time }} - {{ $seat->seat_left }} seat left</span>
-                                </label>
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Let me know if you have party name</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="party" id="">          
+                    </div>
+                </div>
+                <h5 class="text-xl font-bold mb-2 text-white">Packages</h5>
+                    @foreach ($menu as $item)
+                    @if ($item->category === 'CHARTER PACKAGE')
+                        @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
+                            <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'CHARTER PACKAGE' ? '1' : '' }}">
+                                <div class="flex flex-row items-center gap-x-4">
+                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                    <div class="flex flex-col gap-y-2">
+                                        <div class="flex flex-col">
+                                            <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
+                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
+                                            <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
+                                        </div>
+                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                    </div>
+                                </div>
+                                <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                    <option value="1" selected>1</option>
+                                </select>                                
+                                <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
                             </div>
+                        @endif
+                    @elseif ($item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE')
+                        @if ($item->category !== 'CHARTER PACKAGE')
+                            <div class="menu-item flex flex-row items-center justify-between mb-2 gap-4" data-category="{{ $item->category === 'PUB CRAWL PACKAGE' || $item->category === 'NON ALCOHOL PACKAGE' ? '2' : '' }}">
+                                <div class="flex flex-row items-center gap-x-4">
+                                    <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                    <div class="flex flex-col gap-y-2">
+                                        <div class="flex flex-col">
+                                            <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
+                                            <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
+                                            <p class="text-gray-400 text-sm text-justify">{!! str_replace("\n", '<br>', $item->description) !!}</p>
+                                        </div>
+                                        <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                    </div>
+                                </div>
+                                <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>                                
+                                <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
+                            </div>
+                        @endif
+                    @endif
+                @endforeach
+                
+                <div class="flex flex-row items-center gap-x-2">
+                    <button type="button" onclick="prevStep(2)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                        Back
+                    </button>
+                    <button type="button" onclick="nextStep(4)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                        Next                                      
+                    </button>
+                </div>
+            </section>
+            <section id="step4" style="display: none;">
+                <img src="{{ asset('extraorder.jpeg') }}" alt="" class="lg:rounded-t-xl mb-4">
+                <div class="p-4">
+                    <h5 class="text-xl font-bold mb-2 text-white">Extra Orders</h5>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        @foreach ($menu as $item)
+                        @if ($item->category === 'EXTRA Orders')
+                            @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE' || $item->category !== 'CHARTER PACKAGE')
+                                <div class="extra-order flex flex-row items-center justify-between mb-2 gap-4">
+                                    <div class="flex flex-row items-center gap-x-4">
+                                        <input type="checkbox" class="menu-checkbox border border-gray-600 bg-slate-800 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
+                                        <div class="flex flex-col gap-y-2">
+                                            <div class="flex flex-col">
+                                                <h5 class="font-semibold text-base text-white">{{ $item->name }}</h5>
+                                                <h5 class="font-semibold text-xs px-2 py-1 bg-slate-900 text-indigo-400 w-fit rounded-md hidden">{{ $item->category }}</h5>
+                                                <p class="text-gray-400 text-sm text-justify">{{ $item->description }}</p>
+                                            </div>
+                                            <h5 class="menu-price font-semibold text-green-500">IDR <?php echo number_format($item->price, 0, ',', '.'); ?></h5>
+                                        </div>
+                                    </div>
+                                    <select name="quantity[]" id="quantity-{{ $item->id }}" class="quantity-input w-fit border border-gray-700 rounded-lg bg-slate-800 text-slate-200">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                    </select>
+                                    <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
+                                </div>
+                            @endif
+                            @endif
                         @endforeach
                     </div>
-                </div>            
-                <button type="button" onclick="nextStep(2)" class="w-full py-2 rounded-lg text-white bg-black text-sm">
-                    Next                                      
-                </button>
-            </form>
-        </div> 
-        <form action="{{ route('client-store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col" id="step2" style="display: none;">
-            @csrf
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Name</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" name="name" id="">
-                </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Email</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="email" name="email" id="">
-                </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Country</p>
-                    <select class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" name="country" id="">
-                        <x-country/>
-                    </select>
-                </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Phone</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
-                </div>
-                <input type="text" class="hidden" readonly name="book_date" value="{{ session('selected_date') }}">
-                <input type="text" class="hidden" readonly name="book_time" value="{{ session('selected_time') }}">               
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">How much person?</p>
-                    <select class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" name="person" id="">
-                        <x-person/>
-                    </select>            
-                </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Menu</p>
-                    <div onclick="openModal()" class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg text-center cursor-pointer">Choose Menu - 4 Items selected</div>
-                    <div id="myModal" class="bg-black/50 fixed z-20 inset-0 w-full h-screen">
-                        <div class="w-10/12 rounded-md bg-white mx-auto mt-4 p-2">
-                            {{-- <div class="text-xl font-bold cursor-pointer text-right mr-4 translate-y-2" onclick="closeModal()">x</div> --}}
-                            <div class="h-[28rem] overflow-y-auto p-2 grid grid-cols-1 md:grid-cols-2 items-start gap-4">
-                                <div class="grid grid-cols-1 gap-y-2 p-2">
-                                    <h5 class="text-xl font-semibold border-b pb-2 mb-2">Classes</h5>
-                                    @foreach ($class as $item)
-                                        <div class="menu-item flex flex-row items-center justify-between border-b pb-2 mb-2">
-                                            <div class="flex flex-row items-center gap-x-4">
-                                                <input type="checkbox" class="menu-checkbox border border-gray-600 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
-                                                <div class="flex flex-col gap-y-2">
-                                                    <div class="flex flex-col">
-                                                        <h5 class="font-semibold text-lg">{{ $item->name }}</h5>
-                                                        <p class="text-gray-700">{{ $item->description }}</p>
-                                                    </div>
-                                                    <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
-                                                </div>
-                                            </div>
-                                            <input type="number" class="quantity-input w-20 border border-gray-300 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
-                                            <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
-                                        </div>
-                                    @endforeach
-                                </div>
-                                <div class="grid grid-cols-1 gap-y-2 p-2">
-                                    <h5 class="text-xl font-semibold border-b pb-2 mb-2">Food n Beverages</h5>
-                                    @foreach ($menu as $item)
-                                        <div class="menu-item flex flex-row items-center justify-between border-b pb-2 mb-2">
-                                            <div class="flex flex-row items-center gap-x-4">
-                                                <input type="checkbox" class="menu-checkbox border border-gray-600 rounded-sm" name="menu[]" id="menu-{{ $item->id }}" value="{{ $item->name }}">
-                                                <div class="flex flex-col gap-y-2">
-                                                    <div class="flex flex-col">
-                                                        <h5 class="font-semibold text-lg">{{ $item->name }}</h5>
-                                                        <h5 class="font-semibold text-xs p-2 bg-indigo-50 text-indigo-500 w-fit rounded-md">{{ $item->category }}</h5>
-                                                        <p class="text-gray-700">{{ $item->description }}</p>
-                                                    </div>
-                                                    <h5 class="menu-price font-semibold text-green-500">{{ Number::currency($item->price, 'IDR') }}</h5>
-                                                </div>
-                                            </div>
-                                            <input type="number" class="quantity-input w-20 border border-gray-300 rounded-lg" name="quantity[]" id="quantity-{{ $item->id }}" min="1" placeholder="1">
-                                            <input type="hidden" name="menu_ids[]" value="{{ $item->id }}">
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="flex flex-row items-center justify-end gap-x-8 border-t pt-2 mt-2">
-                                <div class="flex flex-row items-center gap-x-4">
-                                    <h5 class="text-lg text-gray-600">Total Price</h5>
-                                    <h5 id="total-price" class="text-lg font-bold">Rp 0</h5>
-                                </div>
-                                <div class="px-4 py-2 bg-black text-white rounded-lg w-fit cursor-pointer" onclick="closeModal()">Close</div>
-                            </div>
-                        </div>
+                    <div class="flex flex-row items-center gap-x-2">
+                        <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                            Back
+                        </button>
+                        <button type="button" onclick="nextStep(5)" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">
+                            Next                                      
+                        </button>
                     </div>
                 </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Payment Method</p>
-                    <select name="payment" id="" class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg">
-                        <option value="Local Bank">Local Bank</option>
-                        <option value="Paypal">Paypal</option>
-                        <option value="Cash">Cash</option>
-                    </select>
+            </section>
+            <section id="step5" style="display: none;" class=" p-4 ">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Name</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="name" id="">
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Email</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="email" name="email" id="">
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Country</p>
+                        <select class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" name="country" id="">
+                            <x-country/>
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Phone</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
+                    </div>
+                    <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
+                    <input class="hidden" name="affiliate" value="{{ session('affiliate') }}">
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">If you have a birthday person, please let us know his/her age and name.</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <p class="text-sm font-medium text-white">Special Request</p>
+                        <textarea class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="request" id=""></textarea>
+                    </div>
+                    <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" readonly name="amount" id="">
                 </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Special Request</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" name="affiliate" id="">
+                <div class="flex flex-row gap-2 mt-4 w-11/12">
+                    <input class="bg-[#0d1818]" type="checkbox" name="agreement" value="I Agree with terms and condition">
+                    <p class="text-justify text-xs text-gray-500">I Agree with all <a href="{{ route('client-agree') }}" class="underline" target="_blank"> terms and condition</a></p>
                 </div>
-                <div class="flex flex-col space-y-0.5">
-                    <p class="text-sm font-medium">Total</p>
-                    <input class="bg-gray-50 py-2 border border-gray-300 text-gray-900 text-sm rounded-lg" type="text" readonly name="amount" id="">
+                <div class="flex flex-row items-center gap-x-2 mt-4">
+                    <button type="button" onclick="prevStep(3)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
+                        Back
+                    </button>
+                    <button type="submit" class="w-full py-2 rounded-lg text-white bg-[#14262b] text-sm font-medium">Confirm</button>
                 </div>
-            </div>
-            <div class="flex flex-row items-center gap-2">
-                <button type="button" onclick="prevStep(1)" class="w-full py-2 rounded-lg text-black bg-slate-400 text-sm">
-                    Back
-                </button>
-                <button type="submit" class="w-full py-2 rounded-lg text-white bg-black text-sm">Book Now</button>
-            </div>
+            </section>
         </form>
-    </div>
     <script>
         // update price
         function updateTotalPrice() {
@@ -160,6 +232,16 @@
                     totalPrice += price * quantity;
                 }
             });
+            document.querySelectorAll('.extra-order').forEach(item => {
+        const checkbox = item.querySelector('.menu-checkbox');
+        const quantityInput = item.querySelector('.quantity-input');
+        if (checkbox.checked && quantityInput.value !== '') {
+            const price = parseFloat(item.querySelector('.menu-price').innerText.replace(/[^\d.]/g, ''));
+            const quantity = parseInt(quantityInput.value);
+            totalPrice += price * quantity;
+        }
+    });
+            
             const amountInput = document.querySelector('input[name="amount"]');
             amountInput.value = totalPrice.toFixed(2);
             document.getElementById('total-price').innerText = 'Rp ' + (totalPrice || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -202,35 +284,139 @@
         let currentStep = 1;
 
         function nextStep(step) {
+            // Set session value based on user selection
+            const selectedValue = document.getElementById('package-selection').value;
+            sessionStorage.setItem('selectedPackage', selectedValue);       
+
+            // Proceed to next step
             document.getElementById('step' + currentStep).style.display = 'none';
             document.getElementById('step' + step).style.display = 'block';
             currentStep = step;
         }
+
         function prevStep(step) {
+            // Remove session value when going back
+            sessionStorage.removeItem('selectedPackage');       
+
+            // Go back to previous step
             document.getElementById('step' + currentStep).style.display = 'none';
             document.getElementById('step' + step).style.display = 'block';
             currentStep = step;
         }
+
+        // Calendar load
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const events = {!! json_encode($events) !!};                                
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                dateClick: function(info) {
+                    // Ambil tanggal yang diklik
+                    const clickedDate = info.date;
+                    const allDates = document.querySelectorAll('.fc-daygrid-day');
+                    allDates.forEach(date => {
+                        date.classList.remove('selected-date');
+                    });
+                    info.dayEl.classList.add('selected-date'); 
+
+                    // Filter acara berdasarkan tanggal yang diklik
+                    const clickedDateEvents = events.filter(event => {
+                        const eventDate = new Date(event.start);
+                        return eventDate.getFullYear() === clickedDate.getFullYear() &&
+                               eventDate.getMonth() === clickedDate.getMonth() &&
+                               eventDate.getDate() === clickedDate.getDate();
+                    });             
+
+                    // Tampilkan daftar acara yang sesuai
+                    const eventListContainer = document.getElementById('event-list');
+                    eventListContainer.innerHTML = ''; // Kosongkan isi sebelum menambahkan acara baru              
+
+                    if (clickedDateEvents.length > 0) {
+                        clickedDateEvents.forEach(event => {
+                            const eventItem = document.createElement('li');
+                            const eventInfo = document.createElement('span');
+                            const startTime = new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                            eventInfo.textContent = `${startTime} - ${event.title}`;
+                            eventItem.appendChild(eventInfo);
+                            eventItem.addEventListener('click', function() {
+                                handleEventSelection(event);
+                            });
+                            eventListContainer.appendChild(eventItem);
+                        });
+                    } else {
+                        const noEventItem = document.createElement('li');
+                        noEventItem.textContent = 'No events for this date';
+                        eventListContainer.appendChild(noEventItem);
+                    }
+                }
+            });             
+
+            calendar.render();      
+
+            let selectedEvent = null; // variabel untuk menyimpan event yang dipilih sebelumnya     
+
+            function handleEventSelection(event) {
+                // Tangani pemilihan acara
+                const options = {locale:'en-US', weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                const selectedTime = new Intl.DateTimeFormat('en-US', options).format(new Date(event.start));
+                document.getElementById('book_time').value = selectedTime;      
+
+                // Hapus kelas selected-event dari event sebelumnya yang dipilih (jika ada)
+                if (selectedEvent !== null) {
+                    selectedEvent.classList.remove('selected-event');
+                }               
+
+                // Tambahkan kelas selected-event pada event yang baru dipilih
+                selectedEvent = event.target;
+                selectedEvent.classList.add('selected-event');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const packageSelect = document.getElementById('package-selection');
+            const charterSection = document.getElementById('charter-selection');
+            const charterMenuItems = document.querySelectorAll('.menu-item[data-category="1"]');
+            const rideMenuItems = document.querySelectorAll('.menu-item[data-category="2"]');
+
+            // Fungsi untuk menyesuaikan tampilan menu saat pilihan paket berubah
+            function adjustMenuDisplay(selectedValue) {
+                if (selectedValue === 'Charter Package (Up to 8 people)') {
+                    charterSection.style.display = 'block';
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                } else if (selectedValue === 'RIDE SHARE (Up to 8 people)') {
+                    charterSection.style.display = 'none';
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                } else {
+                    // Jika pilihan paket tidak sesuai, sembunyikan semua opsi menu
+                    charterSection.style.display = 'none';
+                    charterMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                    rideMenuItems.forEach(item => {
+                        item.style.display = 'none';
+                    });
+                }
+            }
+            // Panggil fungsi untuk menyesuaikan tampilan menu saat halaman dimuat
+            adjustMenuDisplay(packageSelect.value);
+            // Tambahkan event listener untuk memanggil fungsi saat pilihan paket berubah
+            packageSelect.addEventListener('change', function() {
+                adjustMenuDisplay(this.value);
+            });
+        });
+
+
     </script>
 @endsection
-
- {{-- <div class="grid grid-cols-1 items-center gap-2">
-                <div class="bg-gray-50 flex justify-between py-1.5 border border-gray-300 text-gray-900 text-xs rounded-lg">
-                    <input type="date" name="book_date" class="border-none bg-transparent text-sm py-0.5" id="" value="{{ session('selected_date') }}">
-                    <button type="submit" class="text-sm mr-2 bg-orange-600 text-orange-100 p-1 rounded-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>                                      
-                    </button>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    @foreach($seats as $seat)
-                        <div class="flex items-center justify-between bg-gray-50 py-2 px-4 border border-gray-300 rounded-lg mb-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="book_time" value="{{ $seat->available_time }}" class="mr-2" {{ $seat->available_time == session('selected_time') ? 'checked' : '' }}>
-                                <span>{{ $seat->available_time }} - {{ $seat->seat_left }} seat left</span>
-                            </label>
-                        </div>
-                    @endforeach
-                </div>
-            </div> --}}
