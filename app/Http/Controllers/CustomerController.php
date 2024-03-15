@@ -83,8 +83,9 @@ class CustomerController extends Controller
         $data['request'] = $request->input('request');
         $data['party'] = $request->input('party');
         $data['birthday'] = $request->input('birthday');
+        $data['quantity'] = $request->input('quantity');
         // Callback 
-        $callback = route('client-success');
+        $callback = 'https://shipwreckbali.com/pubcrawl.html';
 
         // Bersihkan data sesi
         $request->session()->forget('selected_time');
@@ -92,7 +93,8 @@ class CustomerController extends Controller
 
         // Load kunci privat dari penyimpanan
         $privateKey = openssl_get_privatekey(file_get_contents(storage_path('priv-key.pem')));
-
+        $unformattedAmount = preg_replace('/[^0-9]/', '', $request->amount);
+        $amount = $unformattedAmount;
         // Persiapkan payload yang akan ditandatangani
         $payloadToSign = json_encode([
             "request" => [
@@ -102,7 +104,7 @@ class CustomerController extends Controller
                 "merchantName" => "BEER SHIP PUB CRAWL",
                 "merchantDescription" => "",
                 "currencyCode" => "IDR",
-                "amount" => $request->amount,
+                "amount" => $amount ,
                 "callbackSuccess" => $callback,
                 "callbackFailure" => "",
                 "message" => "",
@@ -119,26 +121,25 @@ class CustomerController extends Controller
         }
         
         // Integrasi Pembayaran 
-        $urls = 'https://api-link.cashlez.com/generate_url_vendor';
+        $urls = 'https://api-link.cashlez.com';
         $payload = [
             "data" => json_decode($payloadToSign, true),
             "signature" => $signatureBase64
         ];
-
-        $req = Http::withHeaders(['Content-Type' => 'application/json'])->post($urls, $payload);
+        // payment
+        $req = Http::withHeaders(['Content-Type' => 'application/json'])->post($urls . '/generate_url_vendor', $payload);
         $res = $req->json();
-        // dd($res);
+        $generatedUrl = $res['data']['response']['generatedUrl'];
+        // pick payment that chosen by user
+       
         if ($req->successful()) {
             Mail::to($request->email)->send(new SendEmail($data));
             Customer::create($data);
-            $generatedUrl = $res['data']['response']['generatedUrl'];
             return view('client.payment', compact('generatedUrl'));
         } else {
-            // Tampilkan pesan jika gagal terhubung ke gateway pembayaran
             return response()->json(['message' => 'Failed to connect to payment gateway'], 500);
-        }
+        }        
     }
-
     // Fungsi untuk menampilkan pembelian tiket
     public function index()
     {

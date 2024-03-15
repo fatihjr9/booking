@@ -100,12 +100,45 @@ a[x-apple-data-detectors] {
                      </tr>
                      <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
                         <td align="left" style="padding:0;margin:0;">
-                        <h5 style="margin-bottom: .5rem; font-size:1rem; font-weight:700;font-family:arial, 'helvetica neue', helvetica, sans-serif;">Order Details</h5>
-                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Booking Date:  <strong>{{ $data['book_time'] }}</strong></p>
-                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Selected Packages: <strong>{{ $data['packages'] }}</strong></p>
-                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Ordered menu:  <strong>{{ $data['menu'] }}</strong></p>
-                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Total order: <strong>Rp {{ $data['amount'] }}</strong></p>
-                     </tr>
+                          <h5 style="margin-bottom: .5rem; font-size:1rem; font-weight:700;font-family:arial, 'helvetica neue', helvetica, sans-serif;">Order Details</h5>
+                          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Booking Date:  <strong>{{ $data['book_time'] }}</strong></p>     
+                          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Total Payment:  <strong>{{ $data['amount'] }}</strong></p>
+                          <div style="margin-bottom: .5rem;">
+                            @if(isset($data['packages']) && $data['packages'] == "Charter Package (Up to 8 people)")                     
+                              <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Would you prefer a charter or ride share? <strong>{{ $data['packages'] }}</strong></p>
+                              <div style="padding: .5rem .75rem; background-color:#FAFAFA; border-radius: .5rem;">
+                                <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px; border-bpx solid #c0c0c0; margin-bottom:.5rem;">
+                                    <strong>{{ $data['packages'] }}</strong>
+                                </p>
+                                @php
+                                    $menuItems = explode(',', $data['menu']);
+                                    $quantities = $data['quantity'];
+                                @endphp
+                                @foreach($menuItems as $index => $menuItem)
+                                    <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
+                                        <strong>{{ $menuItem }}</strong> - Quantity: {{ $quantities[$index] }}
+                                    </p>
+                                @endforeach
+                            </div>                                                     
+                            @elseif(isset($data['packages']) && $data['packages'] == "RIDE SHARE (Up to 8 people)")                     
+                                <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Would you charter or ride share? <strong>{{ $data['packages'] }}</strong></p>
+                                <div style="padding: .5rem .75rem; background-color:#FAFAFA; border-radius: .5rem;">
+                                  <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px; border-bpx solid #c0c0c0; margin-bottom:.5rem;">
+                                      <strong>{{ $data['packages'] }}</strong>
+                                  </p>
+                                  @php
+                                      $menuItems = explode(',', $data['menu']);
+                                      $quantities = $data['quantity'];
+                                  @endphp
+                                  @foreach($menuItems as $index => $menuItem)
+                                      <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
+                                          <strong>{{ $menuItem }}</strong> - Quantity: {{ $quantities[$index] }}
+                                      </p>
+                                  @endforeach
+                              </div>                              
+                            @endif
+                          </div>                
+                      </tr>
                      @if(isset($data['birthday']) || isset($data['request']) || isset($data['party']))
                         <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
                             <td align="left" style="padding:0;margin:0;">
@@ -130,7 +163,11 @@ a[x-apple-data-detectors] {
                     @endif
                     <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
                       <td align="left" style="padding:0;margin:0;">
-                      <h5 style="margin-bottom: .5rem; font-size:1rem; font-weight:700;font-family:arial, 'helvetica neue', helvetica, sans-serif;">Agreement</h5>
+                      <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;">
+                          <h5 style="font-size: 1rem; font-weight: 700; margin: 0;">Agreement</h5>
+                          <h5 style="font-size: 1rem; font-weight: 700; margin: 0;">I agree to all the items below</h5>
+                          <h5 style="font-size: 1rem; font-weight: 700; margin: 0;"><strong>{{ $data['name'] }}</strong></h5>
+                      </div>                      
                       <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">1. We are in good health and have not received any medical treatment from a physician or other health care provider for any illness or condition that would interfere with the operation of BEER SHIP PUB CRAWL.</p>
                       <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">2. We will always fasten our seatbelts and pledge not to get drunk.</p>
                       <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">3. We are responsible for any defacement or loss of clothing, jewelry or personal belongings.</p>
@@ -152,8 +189,18 @@ a[x-apple-data-detectors] {
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
                       <td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
-                        <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Got a question? Email us at <a target="_blank" href="mailto:shipwreck.bali.indonesia@gmail.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#5C68E2;font-size:14px">shipwreck.bali.indonesia@gmail.com</a> <br> or Whatsapp : +6287765478797 or +6287862082655</p></td>
+                        <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">Got a question? Email us at <a target="_blank" href="mailto:shipwreck.bali.indonesia@gmail.com" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#5C68E2;font-size:14px">shipwreck.bali.indonesia@gmail.com</a> <br> or Whatsapp : <a href="https://wa.me/6287765478797" target="_blank">Whatsapp 1</a> or <a href="https://wa.me/6287862082655" target="_blank">Whatsapp 1</a></p></td>
                      </tr>
+                      <tr style="margin: 0; border-bottom: 1px solid #C0C0C0; margin-top:1rem;">
+                        <td align="left" style="padding:;margin:0;">
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">1. Meet and depart at <a href="https://maps.app.goo.gl/jicwFKEP1QNgdoQx8" target="_blank">SHIPWRECK BALI Roof Top Bar & Resto.</a></p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">2. We will drive along the famous Kuta Beach in the Kuta and Legian area, past the Beach Walk shopping mall, and along the busiest Legian Street.</p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">3. Enjoy the best music and drinks while looking out over the surrounding area from a raised platform amidst the throngs of tourists.</p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">4. Enjoy a 90-120 minute beer-ship pub crawl.</p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">5. Please arrive at the starting point on time.</p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">6. A few minutes late is not a problem. However, if you are more than 15 minutes late, your ride will be treated as cancelled. For charter packages, due to staff duties (cleaning bikes, washing beer, staff breaks, etc.), we will wait but may shorten or change the ride time.</p>
+                        <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">7. No refunds will be given after payment has been made, but rebooking within 2 years will be accepted.</p>
+                      </tr> 
                    </table></td>
                  </tr>
                </table></td>
@@ -162,16 +209,6 @@ a[x-apple-data-detectors] {
          </tr>
        </table>
        <table cellpadding="0" cellspacing="0" class="es-footer" align="center" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-        <tr style="margin-bottom: .5rem; border-bottom: 1px solid #C0C0C0; padding-bottom:1rem;">
-          <td align="left" style="padding:0;margin:0;">
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">1. Meet and depart at <a href="https://maps.app.goo.gl/jicwFKEP1QNgdoQx8" target="_blank">SHIPWRECK BALI Roof Top Bar & Resto.</a></p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">2. We will drive along the famous Kuta Beach in the Kuta and Legian area, past the Beach Walk shopping mall, and along the busiest Legian Street.</p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">3. Enjoy the best music and drinks while looking out over the surrounding area from a raised platform amidst the throngs of tourists.</p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">4. Enjoy a 90-120 minute beer-ship pub crawl.</p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">5. Please arrive at the starting point on time.</p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">6. A few minutes late is not a problem. However, if you are more than 15 minutes late, your ride will be treated as cancelled. For charter packages, due to staff duties (cleaning bikes, washing beer, staff breaks, etc.), we will wait but may shorten or change the ride time.</p>
-          <p style="margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">7. No refunds will be given after payment has been made, but rebooking within 2 years will be accepted.</p>
-       </tr> 
         <tr>
           <td align="center" style="padding:0;Margin:0">
            <table class="es-footer-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px" role="none">
@@ -192,7 +229,7 @@ a[x-apple-data-detectors] {
                        </table></td>
                      </tr>
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-bottom:35px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">Shipwrecked Bali<br>. All Rights Reserved.</p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">Jl. Kartika Plaza No.18-21, Kuta, Kec. Kuta, Kabupaten Badung, Bali</td>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:35px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">SHIPWRECK BALI ROOFTOP BAR &RESTO<br>. Open Time 9:00～1:00（L.O. 0:30）.</p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">Jl. Kartika Plaza No.18-21, Kuta, Kec. Kuta, Kabupaten Badung, Bali</td>
                      </tr>
                    </table></td>
                  </tr>

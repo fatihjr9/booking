@@ -17,7 +17,6 @@
         <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid/main.css" rel="stylesheet" />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         <!-- Styles -->
         @livewireStyles
     </head>
@@ -54,8 +53,14 @@
         
         <script>
             const input = document.querySelector("#phone");
-            window.intlTelInput(input, {
-              utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/utils.js",
+            const iti = window.intlTelInput(input, {
+                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@19.2.16/build/js/utils.js"
+            });
+
+            input.addEventListener('countrychange', function (e) {
+                const countryCode = iti.getSelectedCountryData().dialCode; // Mendapatkan kode panggilan negara
+                const phoneNumber = input.value.replace(/\D/g, ''); // Menghapus karakter non-digit dari nomor telepon
+                input.value = `+${countryCode}${phoneNumber}`; // Memperbarui nilai input dengan nomor telepon yang diformat
             });
         </script>
     </body>

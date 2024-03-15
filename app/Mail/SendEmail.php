@@ -12,13 +12,17 @@ use Illuminate\Queue\SerializesModels;
 class SendEmail extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public $data;
+    // public $paymentMethod; // Tambahkan properti untuk menyimpan paymentMethod
+
     /**
      * Create a new message instance.
      */
-    public $data;
-    public function __construct(array $data)
+    public function __construct(array $data) // Tambahkan $paymentMethod sebagai parameter
     {
         $this->data = $data;
+        // $this->paymentMethod = $paymentMethod;
     }
 
     /**
@@ -38,7 +42,7 @@ class SendEmail extends Mailable
     {
         return new Content(
             view: 'client.email',
-            with: ['data' => $this->data]
+            with: ['data' => $this->data] 
         );
     }
 

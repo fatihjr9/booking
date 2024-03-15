@@ -10,9 +10,7 @@ class SeatController extends Controller
 {
 
     public function index() {
-        $seats = seat::latest()->get();
-
-    
+        $seats = seat::all();
         return view('admin.views.seat', compact('seats'));
     }
 
@@ -22,23 +20,29 @@ class SeatController extends Controller
     }
 
     public function store(Request $request) {
-        $availableTimes = $request->input('available_time');
+        $availableDate = $request->input('available_date');
         $seatLeft = $request->input('seat_left');
     
         // Validasi input jika diperlukan
         $request->validate([
-            'available_time.*' => 'required',
-            'seat_left.*' => 'required'
+            'available_date' => 'required|date',
+            'seat_left.*' => 'required|numeric|min:0'
         ]);
     
-        foreach ($availableTimes as $key => $time) {
+        // Inisialisasi variabel $timeSlots
+        $timeSlots = ['12:00', '14:30', '17:00', '19:30', '22:00'];
+    
+        foreach ($seatLeft as $key => $seat) {
+            $time = $timeSlots[$key];
             Seat::create([
-                'available_time' => $time,
-                'seat_left' => $seatLeft[$key]
+                'available_time' => $availableDate . ' ' . $time . ':00',
+                'seat_left' => $seat
             ]);
         }
+        
         return redirect()->route('admin-seat');
     }
+          
 
     public function edit($id) {
         $seat = seat::findOrFail($id);

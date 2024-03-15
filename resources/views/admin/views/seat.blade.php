@@ -7,7 +7,7 @@
             <button  id="dropdownHoverButton" class="px-4 py-2 bg-black text-white rounded-lg w-fit" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover">Add Services</button>
             <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 border rounded-lg shadow p-1 w-40 mx-auto">
                 <div class="flex flex-col gap-2">
-                    <a href="{{ route('admin-seat-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Menu</a>
+                    <a href="{{ route('admin-seat-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Seats</a>
                     <a href="{{ route('admin-category-tour-create') }}" class="hover:bg-orange-50 hover:text-orange-500 text-sm p-2">Add Category</a>
                 </div>
             </div>

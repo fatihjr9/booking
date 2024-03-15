@@ -10,19 +10,6 @@
         background-color: #14262b;
         color: rgb(129 140 248);
     }
-   #event-list li {
-        background-color: #14262b;
-        color: white;
-        margin-bottom: .5rem;
-        padding: .5rem 1rem;
-        border-radius: .5rem;
-        border: 1px solid #c0c0c0;
-        cursor: pointer;
-   }
-   #event-list li:hover {    
-    background-color: #14262b;
-    color: rgb(129 140 248);
-   }
    </style>
         {{-- Step 1 --}}
         <form action="{{ route('client-create') }}" method="GET" id="step1" class="p-2 space-y-2">
@@ -69,7 +56,7 @@
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg" type="text" name="party" id="">          
                     </div>
                 </div>
-                <h5 class="text-xl font-bold mb-2 text-white">Packages</h5>
+                <h5 class="text-xl font-bold my-2 text-white">Packages</h5>
                     @foreach ($menu as $item)
                     @if ($item->category === 'CHARTER PACKAGE')
                         @if ( $item->category !== 'PUB CRAWL PACKAGE' || $item->category !== 'NON ALCOHOL PACKAGE')
@@ -204,15 +191,16 @@
                             <x-country/>
                         </select>
                     </div>
-                    <div class="flex flex-col space-y-0.5 justify-between">
-                        <p class="text-sm font-medium text-white">Phone</p>
+                    <div class="flex flex-col space-y-0.5 justify-between w-full">
+                        <p class="text-sm font-medium text-white">Phone ( Whatsapp )</p>
                         <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="phone" id="phone">
+                        <input type="hidden" id="countryCode">
                     </div>
                     <input class="hidden" readonly name="book_time" id="book_time" value="{{ $selectedTime }}">
                     <input class="hidden" name="affiliate" value="{{ session('affiliate') }}">
                     <div class="flex flex-col space-y-0.5 justify-between">
-                        <p class="text-xs font-medium text-white whitespace-nowrap">If you have a birthday person, please let us know his/her age and name.</p>
-                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday" id="phone">            
+                        <p class="text-sm font-medium text-white whitespace-nowrap">If you have a birthday person, please let us know his/her age and name.</p>
+                        <input class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" type="tel" name="birthday">            
                     </div>
                     <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Special Request</p>
@@ -220,19 +208,12 @@
                     </div>
                     <div class="flex flex-col space-y-0.5 justify-between">
                         <p class="text-sm font-medium text-white">Total</p>
-                        @php
-                            $formattedTotal = '';
-                            if ($item->amount !== null) {
-                                $formattedTotal = 'IDR ' . Number::currency($item->amount, 'IDR');
-                                $formattedTotal = rtrim(rtrim($formattedTotal, '0'), '.');  
-                            }
-                        @endphp
-                        <h5 class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg pl-4" name="amount">{{ $formattedTotal }}</h5>
+                        <input type="text" class="bg-[#0d1818] py-2 border border-gray-700 text-white text-sm rounded-lg w-full" readonly name="amount" id="total-amount">
                     </div>                     
                 </div>
                 <div class="flex flex-row gap-2 mt-4 w-11/12">
                     <input class="bg-[#0d1818]" type="checkbox" name="agreement" value="I Agree with terms and condition">
-                    <p class="text-justify text-xs text-gray-500">I Agree with all <a href="{{ route('client-agree') }}" class="underline" target="_blank"> terms and condition</a></p>
+                    <p class="text-justify text-sm text-gray-500">I Agree with all <a href="{{ route('client-agree') }}" class="underline" target="_blank"> terms and condition</a></p>
                 </div>
                 <div class="flex flex-row items-center gap-x-2 mt-4">
                     <button type="button" onclick="prevStep(4)" class="w-full py-2 rounded-lg text-slate-600 bg-[#0d1818] text-sm font-medium">
@@ -276,8 +257,8 @@
                 }
             });
 
-            const amountH5 = document.querySelector('h5[name="amount"]');
-            amountH5.innerText = formatCurrency(totalPrice);
+            const amountInput = document.getElementById('total-amount');
+            amountInput.value = formatCurrency(totalPrice);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -341,7 +322,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
             const events = {!! json_encode($events) !!};                                
-
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 dateClick: function(info) {
@@ -352,60 +332,60 @@
                         date.classList.remove('selected-date');
                     });
                     info.dayEl.classList.add('selected-date'); 
-
                     // Filter acara berdasarkan tanggal yang diklik
                     const clickedDateEvents = events.filter(event => {
                         const eventDate = new Date(event.start);
                         return eventDate.getFullYear() === clickedDate.getFullYear() &&
-                               eventDate.getMonth() === clickedDate.getMonth() &&
-                               eventDate.getDate() === clickedDate.getDate();
+                            eventDate.getMonth() === clickedDate.getMonth() &&
+                            eventDate.getDate() === clickedDate.getDate();
                     });             
-
                     // Tampilkan daftar acara yang sesuai
                     const eventListContainer = document.getElementById('event-list');
                     eventListContainer.innerHTML = ''; // Kosongkan isi sebelum menambahkan acara baru              
-
                     if (clickedDateEvents.length > 0) {
                         clickedDateEvents.forEach(event => {
-                            const eventItem = document.createElement('li');
-                            const eventInfo = document.createElement('span');
-                            const startTime = new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                            eventInfo.textContent = `${startTime} - ${event.title}`;
-                            eventItem.appendChild(eventInfo);
-                            eventItem.addEventListener('click', function() {
+                            const eventItem = document.createElement('div');
+                            eventItem.classList.add('flex', 'items-center', 'gap-2', 'bg-[#14262b]', 'text-white', 'p-2', 'rounded-lg');
+                            const radioButton = document.createElement('input');
+                            radioButton.setAttribute('type', 'radio');
+                            radioButton.setAttribute('name', 'event-radio');
+                            radioButton.setAttribute('id', `event-${event.id}`);
+                            radioButton.setAttribute('value', event.id);
+                            radioButton.addEventListener('change', function() {
                                 handleEventSelection(event);
                             });
+                            eventItem.appendChild(radioButton);
+                            const label = document.createElement('label');
+                            label.setAttribute('for', `event-${event.id}`);
+                            label.textContent = `${new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${event.title}`;
+                            eventItem.appendChild(label);
                             eventListContainer.appendChild(eventItem);
                         });
                     } else {
-                        const noEventItem = document.createElement('li');
-                        noEventItem.textContent = 'No events for this date';
+                        const noEventItem = document.createElement('div');
+                        noEventItem.classList.add('flex', 'items-center', 'gap-2', 'bg-[#14262b]', 'text-white', 'p-2', 'rounded-lg');
+                        noEventItem.textContent = 'No schedule';
                         eventListContainer.appendChild(noEventItem);
                     }
                 }
             });             
-
             calendar.render();      
-
             let selectedEvent = null; // variabel untuk menyimpan event yang dipilih sebelumnya     
-
             function handleEventSelection(event) {
                 // Tangani pemilihan acara
                 const options = {locale:'en-US', weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
                 const selectedTime = new Intl.DateTimeFormat('en-US', options).format(new Date(event.start));
                 document.getElementById('book_time').value = selectedTime;      
-
                 // Hapus kelas selected-event dari event sebelumnya yang dipilih (jika ada)
                 if (selectedEvent !== null) {
                     selectedEvent.classList.remove('selected-event');
                 }               
-
                 // Tambahkan kelas selected-event pada event yang baru dipilih
                 selectedEvent = event.target;
                 selectedEvent.classList.add('selected-event');
             }
         });
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const packageSelect = document.getElementById('package-selection');
@@ -453,21 +433,5 @@
         const formattedAmount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
         return formattedAmount.replace(/\D00(?=\D*$)/, '');
     }
-
-    // Fungsi untuk memperbarui nilai amount saat input berubah
-    function updateAmount() {
-    const amountInput = document.querySelector('input[name="amount"]');
-    const totalPrice = parseFloat(amountInput.value);
-    amountInput.value = formatCurrency(totalPrice);
-}
-
-
-    // Panggil fungsi updateAmount saat halaman dimuat dan saat input berubah
-    document.addEventListener('DOMContentLoaded', function() {
-        updateAmount();
-        document.querySelectorAll('input[name="amount"]').forEach(input => {
-            input.addEventListener('input', updateAmount);
-        });
-    });
     </script>
 @endsection

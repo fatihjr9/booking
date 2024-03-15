@@ -14,34 +14,42 @@
                     @csrf
                     <div class="flex flex-col gap-2" id="inputContainer">
                         <div class="flex flex-col space-y-1">
-                            <p>Date and Time</p>
-                            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" type="datetime-local" name="available_time[]" required>
+                            <p>Date</p>
+                            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" 
+                                   type="date" id="available_date">
+                            <div id="selected_dates" class="grid grid-cols-2 lg:grid-cols-6 gap-2"></div>
                         </div>
-                        <div class="flex flex-col space-y-1">
-                            <p>Seats Available</p>
-                            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" type="number" name="seat_left[]" required>
-                        </div>
+                        @php
+                            $timeSlots = ['12:00', '14:30', '17:00', '19:30', '22:00'];
+                        @endphp
+                        <p>Date</p>
+                        <!-- Loop through time slots and display inputs -->
+                        @foreach ($timeSlots as $time)
+                            <div class="flex flex-row items-center gap-x-2">
+                                <p>{{ $time }}</p>
+                                <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" type="number" name="seat_left[]" required>
+                            </div>
+                        @endforeach
                     </div>                  
-                    <button type="button" onclick="addMoreInputs()" class="w-full bg-slate-100 text-slate-400 py-2 rounded-lg my-2">+ Add time and seat</button>
-                    <button class="w-full bg-black text-white py-2 rounded-lg">Continue</button>
+                    <button class="w-full bg-black text-white py-2 rounded-lg mt-4">Continue</button>
                 </form>
             </div>
         </div>
     </div>
     <script>
-        function addMoreInputs() {
-            var container = document.getElementById('inputContainer');
-
-            var dateTimeInput = document.createElement('div');
-            dateTimeInput.className = 'flex flex-col space-y-1';
-            dateTimeInput.innerHTML = '<p>Date and Time</p><input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="datetime-local" name="available_time[]" required>';
-
-            var seatsInput = document.createElement('div');
-            seatsInput.className = 'flex flex-col space-y-1';
-            seatsInput.innerHTML = '<p>Seats Available</p><input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="number" name="seat_left[]" required>';
-
-            container.appendChild(dateTimeInput);
-            container.appendChild(seatsInput);
-        }
+        const inputDate = document.getElementById('available_date');
+        const selectedDatesDiv = document.getElementById('selected_dates');
+    
+        inputDate.addEventListener('change', function() {
+            const selectedDate = inputDate.value;
+    
+            if (selectedDate) {
+                const newDate = document.createElement('p');
+                newDate.classList.add('bg-slate-200', 'text-slate-900', 'px-3','py-1', 'rounded-lg');
+                newDate.textContent = selectedDate;
+                selectedDatesDiv.appendChild(newDate);
+            }
+            inputDate.value = ""; // Clear input after adding date
+        });
     </script>
 </x-app-layout>
