@@ -28,20 +28,28 @@
             </div>
         </div>
     </div>
-    <script>
-        function addMoreInputs() {
-            var container = document.getElementById('inputContainer');
+    
+<script>
+    const inputDate = document.getElementById('available_date');
 
-            var dateTimeInput = document.createElement('div');
-            dateTimeInput.className = 'flex flex-col space-y-1';
-            dateTimeInput.innerHTML = '<p>Date and Time</p><input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="datetime-local" name="available_time[]" required>';
+    inputDate.addEventListener('change', function() {
+        const selectedDate = inputDate.value;
 
-            var seatsInput = document.createElement('div');
-            seatsInput.className = 'flex flex-col space-y-1';
-            seatsInput.innerHTML = '<p>Seats Available</p><input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg" type="number" name="seat_left[]" required>';
-
-            container.appendChild(dateTimeInput);
-            container.appendChild(seatsInput);
+        if (selectedDate) {
+            // Cek apakah tanggal sudah ada dalam daftar
+            const existingDate = document.querySelector(`#selected_dates [name="available_time"][value="${selectedDate}"]`);
+            
+            if (!existingDate) {
+                const newDate = document.createElement('input');
+                newDate.classList.add('bg-slate-200', 'text-slate-900', 'px-3','py-1', 'rounded-lg');
+                newDate.setAttribute('type', 'date');
+                newDate.setAttribute('name', 'available_time');
+                newDate.setAttribute('value', selectedDate);
+                newDate.setAttribute('readonly', 'readonly');
+                document.getElementById('selected_dates').appendChild(newDate);
+            }
         }
-    </script>
+        inputDate.value = ""; // Clear input after adding date
+    });
+</script>
 </x-app-layout>

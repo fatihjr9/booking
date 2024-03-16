@@ -7,22 +7,22 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg w-8/12 mx-auto">
                 <form action="{{ route('admin-seat-store') }}" method="POST" enctype="multipart/form-data" class="p-4 w-full">
                     @csrf
                     <div class="flex flex-col gap-2" id="inputContainer">
                         <div class="flex flex-col space-y-1">
-                            <p>Date</p>
+                            <p class="text-base font-bold">Date</p>
                             <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full" 
-                                   type="date" id="available_date">
+                                   type="date" id="available_date" name="available_time">
                             <div id="selected_dates" class="grid grid-cols-2 lg:grid-cols-6 gap-2"></div>
                         </div>
                         @php
                             $timeSlots = ['12:00', '14:30', '17:00', '19:30', '22:00'];
                         @endphp
-                        <p>Date</p>
+                        <p class="text-base font-bold">Time And Seats</p>
                         <!-- Loop through time slots and display inputs -->
                         @foreach ($timeSlots as $time)
                             <div class="flex flex-row items-center gap-x-2">
@@ -36,20 +36,30 @@
             </div>
         </div>
     </div>
-    <script>
-        const inputDate = document.getElementById('available_date');
-        const selectedDatesDiv = document.getElementById('selected_dates');
-    
-        inputDate.addEventListener('change', function() {
-            const selectedDate = inputDate.value;
-    
-            if (selectedDate) {
-                const newDate = document.createElement('p');
+<script>
+    const inputDate = document.getElementById('available_date');
+
+    inputDate.addEventListener('change', function() {
+        const selectedDate = inputDate.value;
+
+        if (selectedDate) {
+            // Cek apakah tanggal sudah ada dalam daftar
+            const existingDate = document.querySelector(`#selected_dates input[value="${selectedDate}"]`);
+            
+            if (!existingDate) {
+                const newDate = document.createElement('input');
                 newDate.classList.add('bg-slate-200', 'text-slate-900', 'px-3','py-1', 'rounded-lg');
-                newDate.textContent = selectedDate;
-                selectedDatesDiv.appendChild(newDate);
+                newDate.setAttribute('type', 'date');
+                newDate.setAttribute('name', 'available_time[]');
+                newDate.setAttribute('value', selectedDate);
+                newDate.setAttribute('readonly', 'readonly');
+                document.getElementById('selected_dates').appendChild(newDate);
             }
-            inputDate.value = ""; // Clear input after adding date
-        });
-    </script>
+        }
+
+        inputDate.value = ""; // Clear input after adding date
+    });
+</script>
+
+    
 </x-app-layout>
