@@ -364,7 +364,7 @@
                     } else {
                         const noEventItem = document.createElement('div');
                         noEventItem.classList.add('flex', 'items-center', 'gap-2', 'bg-[#14262b]', 'text-white', 'p-2', 'rounded-lg');
-                        noEventItem.textContent = 'No schedule';
+                        noEventItem.textContent = 'No schedule available';
                         eventListContainer.appendChild(noEventItem);
                     }
                 }
